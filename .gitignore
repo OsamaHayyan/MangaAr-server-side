@@ -1,6 +1,3 @@
 node_modules
-public/chapters
-public/manga_images
-public/news
-public/profile_photo
+
 .env
