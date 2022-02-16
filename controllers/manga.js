@@ -289,9 +289,10 @@ exports.deleteManga = async (req, res, next) => {
     ).lean();
 
     const dirImage = path.dirname(manga.image);
-    const dirChapters = path.dirname(
-      path.dirname(manga.chapters[0].chapter[0])
-    );
+    const dirChapters =
+      manga.chapters.length != 0
+        ? path.dirname(path.dirname(manga.chapters[0].chapter[0]))
+        : null;
     deleteDir([dirImage, dirChapters]);
 
     return res.status(200).json({ message: "deleted succefully" });

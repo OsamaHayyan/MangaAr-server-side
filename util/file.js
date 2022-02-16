@@ -24,12 +24,14 @@ exports.deleteDir = async (dir) => {
   try {
     if (Array.isArray(dir)) {
       for await (d of dir) {
+        if (d == null) return;
         d = path.join(__dirname, "..", d);
-        fsPromise.rmdir(d, { recursive: true });
+        fsPromise.rm(d, { recursive: true });
       }
     } else {
+      if (d == null) return;
       dir = path.join(__dirname, "..", dir);
-      fsPromise.rmdir(dir, { recursive: true });
+      fsPromise.rm(dir, { recursive: true });
     }
   } catch (error) {
     return errorCode(error, 500);
