@@ -66,13 +66,19 @@ exports.createManga = async (req, res, next) => {
 exports.getAllManga = async (req, res, next) => {
   try {
     let { catId, orderBy, page } = req.query;
-    catId = req.query.catId
-      ? { category: { $all: req.query.catId.split(",") } }
-      : {};
-    isObjectId(catId);
+    if (catId && catId != "all") await isObjectId(catId);
+    const mangaCount =
+      catId && catId != "all"
+        ? await Manga.count({ category: catId })
+        : await Manga.estimatedDocumentCount().lean();
+    const mangaPages = Math.ceil(mangaCount / 20);
+
+    catId =
+      catId && catId != "all" ? { category: { $all: catId.split(",") } } : {};
     orderBy = req.query.orderBy;
     const pageNum = page ? page : 1;
     const { skip, PAGE_SIZE } = await pagination(pageNum, 20);
+
     let manga;
     switch (orderBy) {
       case "alphabet":
@@ -109,11 +115,16 @@ exports.getAllManga = async (req, res, next) => {
           .lean();
         break;
       default:
-        manga = await Manga.find(catId).select("-updatedAt").lean();
-        console.log(manga);
+        manga = await Manga.find(catId)
+          .skip(skip)
+          .limit(PAGE_SIZE)
+          .select("views title image")
+          .collation({ locale: "en", strength: 1 })
+          .sort({ title: 1 })
+          .lean();
         break;
     }
-    return res.status(200).json(manga);
+    return res.status(200).json({ mangaData: manga, mangaPages: mangaPages });
   } catch (error) {
     next(errorHandler(error));
   }
@@ -134,6 +145,11 @@ exports.getManga = async (req, res, next) => {
       .select("-updatedAt -__v -createdAt")
       .lean();
 
+    const rate = manga.rate;
+    const rateResult =
+      (1 * rate[1] + 2 * rate[2] + 3 * rate[3] + 4 * rate[4] + 5 * rate[5]) /
+      (rate[1] + rate[2] + rate[3] + rate[4] + rate[5]);
+    manga.rate = rateResult.toFixed(1);
     return res.status(200).json(manga);
   } catch (error) {
     next(errorHandler(error));

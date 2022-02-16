@@ -29,7 +29,7 @@ const uploads = require("../middleware/uploads").fields([
 @Admin
 @Query: {
   CatId: _id ==> optional,
-  orderBy: string or number ==> optional,
+  orderBy: (alphabet, view, new, rate),
   page: string or number ==> optional,
 }
 @Response: {
