@@ -22,11 +22,14 @@ exports.getAllNews = async (req, res, next) => {
   try {
     const pageNum = req.query?.page || 1;
     const { skip, PAGE_SIZE } = await pagination(pageNum, 20);
-    const news = await News.find()
+    const newsCount = await News.estimatedDocumentCount().lean();
+    const newsPages = Math.ceil(newsCount / 20);
+    let news = await News.find()
       .skip(skip)
       .limit(PAGE_SIZE)
       .sort({ createdAt: -1 })
       .lean();
+    news = { news: news, newsPages: newsPages };
     res.status(200).json(news);
   } catch (error) {
     next(errorHandler(error));
