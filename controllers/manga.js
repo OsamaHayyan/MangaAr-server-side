@@ -265,7 +265,7 @@ exports.deleteManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
 
-    const manga = await Manga.findById(mangaId)
+    const manga = await Manga.findByIdAndDelete(mangaId)
       .select("chapters image category auther")
       .lean();
 
