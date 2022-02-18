@@ -29,8 +29,9 @@ exports.deleteDir = async (dir) => {
         await fsPromise.rm(d, { recursive: true });
       }
     } else {
-      if (d == null) return;
+      if (dir == null) return;
       dir = path.join(__dirname, "..", dir);
+      console.log(dir);
       await fsPromise.rm(dir, { recursive: true });
     }
   } catch (error) {
