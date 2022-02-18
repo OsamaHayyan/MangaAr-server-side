@@ -13,6 +13,7 @@ exports.createChapter = async (req, res, next) => {
   try {
     const mangaId = req.body.mangaId;
     const chapterNum = req.body.chapterNum;
+    const chapterName = req.body.name ? req.body.name : chapterNum;
     const chapter = req.files
       .map((c) => c.path)
       .sort((a, b) => {
@@ -73,7 +74,15 @@ exports.createChapter = async (req, res, next) => {
 
     const manga = await Manga.findOneAndUpdate(
       { _id: mangaId },
-      { $push: { chapters: { chapterNum: chapterNum, chapter: images } } },
+      {
+        $push: {
+          chapters: {
+            chapterNum: chapterNum,
+            name: chapterName,
+            chapter: images,
+          },
+        },
+      },
       { new: true }
     ).lean();
 

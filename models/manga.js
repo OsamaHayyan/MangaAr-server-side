@@ -45,6 +45,9 @@ const mangaSchema = new Schema(
           type: String,
           required: true,
         },
+        name: {
+          type: String,
+        },
         chapter: {
           type: Array,
           required: true,
