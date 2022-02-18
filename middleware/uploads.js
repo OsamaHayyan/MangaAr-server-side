@@ -23,7 +23,7 @@ const fileStorage = multer.diskStorage({
           const mangaId = req.body.mangaId;
           const chapterNum = req.body.chapterNum;
 
-          await chapterValidation(req);
+          await chapterValidation(req, file);
           error_validation_multi(req);
 
           const dir = path.join(
@@ -115,9 +115,9 @@ const fileStorage = multer.diskStorage({
         const mangaId = req.body.mangaId;
         const chapterNum = req.body.chapterNum;
         const dir = path.join("public", "chapters", mangaId, chapterNum);
-        if (failed) {
-          deleteDir(dir);
-        }
+        // if (failed) {
+        //   deleteDir(dir);
+        // }
       }
     }
   },
@@ -154,7 +154,7 @@ module.exports = multer({
 
 /////// Validation Func
 
-const chapterValidation = async (req) => {
+const chapterValidation = async (req, file) => {
   try {
     await body("mangaId", "please add a valid id").isMongoId().run(req);
     await body("chapterNum")
