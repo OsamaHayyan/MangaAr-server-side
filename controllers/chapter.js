@@ -14,6 +14,8 @@ exports.createChapter = async (req, res, next) => {
     const mangaId = req.body.mangaId;
     const chapterNum = req.body.chapterNum;
     const chapterName = req.body.name ? req.body.name : chapterNum;
+    const date = new Date().toISOString().split("T")[0];
+    console.log(date);
     const chapter = req.files
       .map((c) => c.path)
       .sort((a, b) => {
@@ -80,6 +82,7 @@ exports.createChapter = async (req, res, next) => {
             chapterNum: chapterNum,
             name: chapterName,
             chapter: images,
+            date: date,
           },
         },
       },
