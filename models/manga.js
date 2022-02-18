@@ -56,6 +56,10 @@ const mangaSchema = new Schema(
           type: Number,
           default: 0,
         },
+        date: {
+          type: String,
+          required: true,
+        },
       },
     ],
     views: {
