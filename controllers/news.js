@@ -75,7 +75,7 @@ exports.deleteNews = async (req, res, next) => {
     const newsId = req.params.newsId;
     const news = await News.findByIdAndDelete(newsId).lean();
     deleteFile(news.poster);
-    res.status(200).json(news);
+    res.status(200).json("Deleted");
   } catch (error) {
     next(errorHandler(error));
   }
