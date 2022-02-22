@@ -319,10 +319,10 @@ exports.searchManga = async (req, res, next) => {
 
 exports.postRating = async (req, res, next) => {
   try {
-    const rating = req.body.rate;
+    const rating = req.body.rate; //number of star which was checked in client-side
     const mangaId = req.params.mangaId;
     const possibleResult = ["1", "2", "3", "4", "5"];
-    const rateCheck = possibleResult.includes(rating.toString());
+    const rateCheck = possibleResult.includes(rating.toString()); //check if valid rate
     if (!rateCheck) {
       const message = "please add valid rate";
       errorCode(message, 400);
