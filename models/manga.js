@@ -91,7 +91,7 @@ async function rateWeightedAverage(rate) {
     const sumOfRates =
       1 * rate[1] + 2 * rate[2] + 3 * rate[3] + 4 * rate[4] + 5 * rate[5];
 
-    const rateResult = Math.round(sumOfRates / totalRates);
+    const rateResult = Number((sumOfRates / totalRates).toFixed(1));
 
     return rateResult;
   } catch (error) {
