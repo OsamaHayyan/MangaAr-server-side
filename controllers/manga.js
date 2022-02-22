@@ -142,14 +142,9 @@ exports.getManga = async (req, res, next) => {
       { new: true }
     )
       .populate("auther category", "category autherName")
-      .select("-updatedAt -__v -createdAt")
-      .lean();
+      .select("-updatedAt -__v -createdAt");
 
-    const rate = manga.rate;
-    const rateResult =
-      (1 * rate[1] + 2 * rate[2] + 3 * rate[3] + 4 * rate[4] + 5 * rate[5]) /
-      (rate[1] + rate[2] + rate[3] + rate[4] + rate[5]);
-    manga.rate = rateResult.toFixed(1);
+    manga.rate = await manga.rate;
     return res.status(200).json(manga);
   } catch (error) {
     next(errorHandler(error));
@@ -322,6 +317,7 @@ exports.postRating = async (req, res, next) => {
     const rating = req.body.rate; //number of star which was checked in client-side
     const mangaId = req.params.mangaId;
     const possibleResult = ["1", "2", "3", "4", "5"];
+    console.log(rating);
     const rateCheck = possibleResult.includes(rating.toString()); //check if valid rate
     if (!rateCheck) {
       const message = "please add valid rate";
