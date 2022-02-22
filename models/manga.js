@@ -73,7 +73,7 @@ const mangaSchema = new Schema(
       3: Number,
       4: Number,
       5: Number,
-      default: { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1 },
+      default: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
       get: rateWeightedAverage,
     },
   },
@@ -86,8 +86,11 @@ async function rateWeightedAverage(rate) {
     //1=>1, star 2 => 2 starts ..etc
     //total starts = sum of all stars
     const totalRates = rate[1] + rate[2] + rate[3] + rate[4] + rate[5];
+    //if no rates return zero rates
+    if (totalRates == 0) return 0;
     const sumOfRates =
       1 * rate[1] + 2 * rate[2] + 3 * rate[3] + 4 * rate[4] + 5 * rate[5];
+
     const rateResult = Math.round(sumOfRates / totalRates);
 
     return rateResult;
