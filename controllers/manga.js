@@ -317,7 +317,6 @@ exports.postRating = async (req, res, next) => {
     const rating = req.body.rate; //number of star which was checked in client-side
     const mangaId = req.params.mangaId;
     const possibleResult = ["1", "2", "3", "4", "5"];
-    console.log(rating);
     const rateCheck = possibleResult.includes(rating.toString()); //check if valid rate
     if (!rateCheck) {
       const message = "please add valid rate";
