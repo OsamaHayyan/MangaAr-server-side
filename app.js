@@ -45,7 +45,9 @@ app.use(async (error, req, res, next) => {
       message = "Faild to fetch";
     }
     console.log(error);
-    res.status(status).json({ message: message, data: data });
+    res
+      .status(status)
+      .json({ message: message, data: data, statusCode: status });
   } catch (error) {
     console.log(error);
     const message = "Faild to fetch";
