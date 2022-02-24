@@ -59,11 +59,12 @@ exports.createChapter = async (req, res, next) => {
               width: parseInt(b.width),
               height: parseInt(b.height),
             })
+            .webp({ quality: 80 })
             .toFile(
-              `public/chapters/${mangaId}/${chapterNum}/page_${page}-${count}-${date}.${type}`
+              `public/chapters/${mangaId}/${chapterNum}/page_${page}-${count}-${date}.webp`
             );
           images.push(
-            `public/chapters/${mangaId}/${chapterNum}/page_${page}-${count}-${date}.${type}`
+            `public/chapters/${mangaId}/${chapterNum}/page_${page}-${count}-${date}.webp`
           );
           count++;
         });
