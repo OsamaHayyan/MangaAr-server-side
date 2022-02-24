@@ -1,5 +1,6 @@
 const { Types } = require("mongoose");
 const path = require("path");
+const { writeFile } = require("fs/promises");
 const { errorCode, errorHandler } = require("../error/errorsHandler");
 const Auther = require("../models/auther");
 const Manga = require("../models/manga");
@@ -10,6 +11,7 @@ const User = require("../models/user");
 const { deleteFile, deleteDir } = require("../util/file");
 const { isObjectId } = require("../util/is_objectId");
 const { pagination } = require("../util/pagination");
+const { webpConvertion } = require("../util/webpConvertion");
 
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
@@ -24,14 +26,20 @@ exports.createManga = async (req, res, next) => {
       const statusCode = 400;
       errorCode(message, statusCode);
     }
+
+    //Returns [image, banner] or image
+    const mangaWebpPath = banner
+      ? await webpConvertion("manga_images", image[0].path, banner[0].path)
+      : await webpConvertion("manga_images", image[0].path);
+
     const title = req.body.title;
     const story = req.body.story;
     const status = req.body.status;
     const date = req.body.date;
     const category = req.body.category;
     const auther = req.body.auther || null;
-    const imageUrl = image[0].path;
-    const bannerUrl = banner ? banner[0].path : null;
+    const imageUrl = banner ? mangaWebpPath[0] : mangaWebpPath;
+    const bannerUrl = banner ? mangaWebpPath[1] : null;
 
     const manga = await Manga.create({
       title: title,
@@ -174,22 +182,16 @@ exports.putManga = async (req, res, next) => {
     const category = req.body.category;
     const autherUpdated = req.body.auther || null;
     const { image, banner } = req.files;
-    let imageUpdated = image ? image[0].path : null;
-    let bannerUpdated = banner ? banner[0].path : undefined;
+    let imageUpdated = image
+      ? await webpConvertion("manga_images", image[0].path)
+      : undefined;
+    let bannerUpdated = banner
+      ? await webpConvertion("manga_images", banner[0].path)
+      : undefined;
 
     const manga = await Manga.findById(mangaId)
       .select("title category auther image banner")
       .lean();
-
-    //delete image or banner if there is an error during process
-    if (!imageUpdated) {
-      if (bannerUpdated) {
-        deleteFile(bannerUpdated);
-      }
-      const message = "please add image";
-      const statusCode = 400;
-      errorCode(message, statusCode);
-    }
 
     const preAuth = manga.auther;
     const preCat = manga.category;
@@ -197,9 +199,9 @@ exports.putManga = async (req, res, next) => {
     //remove old image and banner
     if (imageUpdated) {
       deleteFile(manga.image);
-      if (bannerUpdated && manga.banner != null) {
-        deleteFile(manga.banner);
-      }
+    }
+    if (bannerUpdated) {
+      deleteFile(manga.banner);
     }
 
     await Manga.updateOne(
