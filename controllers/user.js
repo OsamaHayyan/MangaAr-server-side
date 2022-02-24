@@ -8,6 +8,7 @@ const { errorCode, errorHandler } = require("../error/errorsHandler");
 const { deleteFile } = require("../util/file");
 const Manga = require("../models/manga");
 const { isObjectId } = require("../util/is_objectId");
+const { webpConvertion } = require("../util/webpConvertion");
 
 exports.signup = async (req, res, next) => {
   try {
@@ -15,8 +16,9 @@ exports.signup = async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     const confirmPw = req.body.confirm;
-    const photoPath =
-      req.file?.path || "public/profile_photo/default/placeholder-avatar.jpg";
+    const photoPath = req.file
+      ? await webpConvertion("profile_photo", req.file.path)
+      : "public/profile_photo/default/placeholder-avatar.png";
 
     if (password != confirmPw) {
       const message = "confirm passwrod is wrong";
@@ -449,7 +451,9 @@ exports.editeUser = async (req, res, next) => {
     const userId = req.user.userId;
     const username = req.body.username;
     const email = req.body.email;
-    const photo = req.file?.path;
+    const photo = req.file
+      ? await webpConvertion("profile_photo", req.file.path)
+      : undefined;
     const user = await User.findById(userId).select("photo -_id").lean();
 
     if (req.file) {
