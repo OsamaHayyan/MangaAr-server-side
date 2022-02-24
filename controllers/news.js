@@ -2,6 +2,7 @@ const { errorHandler, errorCode } = require("../error/errorsHandler");
 const News = require("../models/news");
 const { deleteFile } = require("../util/file");
 const { pagination } = require("../util/pagination");
+const { webpConvertion } = require("../util/webpConvertion");
 
 exports.postNews = async (req, res, next) => {
   try {
@@ -11,7 +12,8 @@ exports.postNews = async (req, res, next) => {
       const message = "Please upload poster";
       errorCode(message, 400);
     }
-    await News.create({ topic: topic, poster: poster, title: title });
+    const webpPoster = await webpConvertion("news", poster);
+    await News.create({ topic: topic, poster: webpPoster, title: title });
     res.status(200).json("success");
   } catch (error) {
     next(errorHandler(error));
@@ -53,9 +55,12 @@ exports.getNews = async (req, res, next) => {
 exports.putNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
-    let { topic, poster } = req.body;
-    poster = poster ? poster : req.file?.path;
+    const { title, topic } = req.body;
+    const poster = req.file
+      ? await webpConvertion("news", req.file.path)
+      : undefined;
     const news = await News.findByIdAndUpdate(newsId, {
+      title: title,
       topic: topic,
       poster: poster,
     }).lean();
