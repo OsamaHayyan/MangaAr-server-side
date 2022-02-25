@@ -5,7 +5,7 @@ const { errorCode, errorHandler } = require("../error/errorsHandler");
 const Manga = require("../models/manga");
 const User = require("../models/user");
 
-const { deleteFile, deleteDir } = require("../util/file");
+const { deleteDirAndFiles } = require("../util/file");
 const { isObjectId } = require("../util/is_objectId");
 const last_releases = require("../models/last_releases");
 
@@ -99,7 +99,7 @@ exports.createChapter = async (req, res, next) => {
     });
 
     setTimeout(() => {
-      deleteFile(chapter);
+      deleteDirAndFiles(chapter);
     }, 500);
 
     res.status(200).json("succes");
@@ -209,7 +209,7 @@ exports.deleteChapter = async (req, res, next) => {
       { $pull: { recent: { chapter: chapterId } } }
     );
     const dirname = path.dirname(manga.chapters[0].chapter[0]);
-    await deleteDir(dirname);
+    await deleteDirAndFiles(dirname);
     return res.status(200).json("deleted");
   } catch (error) {
     next(errorHandler(error));

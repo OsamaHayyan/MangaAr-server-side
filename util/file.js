@@ -1,38 +1,19 @@
-const fs = require("fs");
-const fsPromise = require("fs/promises");
+const { rm } = require("fs/promises");
 const path = require("path");
 const { errorCode } = require("../error/errorsHandler");
-exports.deleteFile = async (filePath) => {
-  try {
-    if (Array.isArray(filePath)) {
-      filePath.forEach((f) => {
-        if (f != null) {
-          f = path.join(__dirname, "..", f);
-          fsPromise.rm(f, { recursive: true });
-        }
-      });
-    } else {
-      filePath = path.join(__dirname, "..", filePath);
-      fsPromise.rm(filePath, { recursive: true });
-    }
-  } catch (error) {
-    return errorCode(error, 500);
-  }
-};
 
-exports.deleteDir = async (dir) => {
+exports.deleteDirAndFiles = async (dirOrFile) => {
   try {
-    if (Array.isArray(dir)) {
-      for await (d of dir) {
+    if (Array.isArray(dirOrFile)) {
+      for await (d of dirOrFile) {
         if (d == null) return;
         d = path.join(__dirname, "..", d);
-        await fsPromise.rm(d, { recursive: true });
+        await rm(d, { recursive: true });
       }
     } else {
-      if (dir == null) return;
-      dir = path.join(__dirname, "..", dir);
-      console.log(dir);
-      await fsPromise.rm(dir, { recursive: true });
+      if (dirOrFile == null) return;
+      dirOrFile = path.join(__dirname, "..", dirOrFile);
+      await rm(dirOrFile, { recursive: true });
     }
   } catch (error) {
     return errorCode(error, 500);

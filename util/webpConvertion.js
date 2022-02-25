@@ -3,7 +3,7 @@ const { errorCode } = require("../error/errorsHandler");
 
 const { writeFile } = require("fs/promises");
 const sharp = require("sharp");
-const { deleteFile } = require("./file");
+const { deleteDirAndFiles } = require("./file");
 
 exports.webpConvertion = async (basePath, image, banner) => {
   try {
@@ -28,7 +28,7 @@ const imageConvertion = async (image, basePath) => {
   const webpImage = await sharp(image).webp({ quality: 60 }).toBuffer();
   const newImageExtention = `${path.parse(image).name}.webp`;
   const imageFullPath = path.join("public/", basePath, newImageExtention);
-  await deleteFile(image);
+  await deleteDirAndFiles(image);
   await writeFile(imageFullPath, webpImage);
   return imageFullPath;
 };

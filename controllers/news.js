@@ -1,6 +1,6 @@
 const { errorHandler, errorCode } = require("../error/errorsHandler");
 const News = require("../models/news");
-const { deleteFile } = require("../util/file");
+const { deleteDirAndFiles } = require("../util/file");
 const { pagination } = require("../util/pagination");
 const { webpConvertion } = require("../util/webpConvertion");
 
@@ -66,7 +66,7 @@ exports.putNews = async (req, res, next) => {
     }).lean();
 
     if (req.file) {
-      deleteFile(news.poster);
+      deleteDirAndFiles(news.poster);
     }
 
     res.status(200).json(news);
@@ -79,7 +79,7 @@ exports.deleteNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
     const news = await News.findByIdAndDelete(newsId).lean();
-    deleteFile(news.poster);
+    deleteDirAndFiles(news.poster);
     res.status(200).json("Deleted");
   } catch (error) {
     next(errorHandler(error));

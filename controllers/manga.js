@@ -1,6 +1,4 @@
-const { Types } = require("mongoose");
 const path = require("path");
-const { writeFile } = require("fs/promises");
 const { errorCode, errorHandler } = require("../error/errorsHandler");
 const Auther = require("../models/auther");
 const Manga = require("../models/manga");
@@ -8,7 +6,7 @@ const Category = require("../models/category");
 const last_releases = require("../models/last_releases");
 const User = require("../models/user");
 
-const { deleteFile, deleteDir } = require("../util/file");
+const { deleteDirAndFiles } = require("../util/file");
 const { isObjectId } = require("../util/is_objectId");
 const { pagination } = require("../util/pagination");
 const { webpConvertion } = require("../util/webpConvertion");
@@ -20,7 +18,7 @@ exports.createManga = async (req, res, next) => {
     const { image, banner } = req.files;
     if (!image) {
       if (banner) {
-        deleteFile(banner[0].path);
+        deleteDirAndFiles(banner[0].path);
       }
       const message = "please add image";
       const statusCode = 400;
@@ -198,10 +196,10 @@ exports.putManga = async (req, res, next) => {
 
     //remove old image and banner
     if (imageUpdated) {
-      deleteFile(manga.image);
+      deleteDirAndFiles(manga.image);
     }
     if (bannerUpdated) {
-      deleteFile(manga.banner);
+      deleteDirAndFiles(manga.banner);
     }
 
     await Manga.updateOne(
@@ -293,7 +291,7 @@ exports.deleteManga = async (req, res, next) => {
       manga.chapters.length != 0
         ? path.dirname(path.dirname(manga.chapters[0].chapter[0]))
         : null;
-    await deleteDir([mangaImage, mangaBanner, dirChapters]);
+    await deleteDirAndFiles([mangaImage, mangaBanner, dirChapters]);
 
     return res.status(200).json({ message: "deleted succefully" });
   } catch (error) {

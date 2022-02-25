@@ -2,11 +2,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemalier = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
-const crypto = require("crypto");
 const User = require("../models/user");
 const { errorCode, errorHandler } = require("../error/errorsHandler");
-const { deleteFile } = require("../util/file");
-const Manga = require("../models/manga");
+const { deleteDirAndFiles } = require("../util/file");
 const { isObjectId } = require("../util/is_objectId");
 const { webpConvertion } = require("../util/webpConvertion");
 
@@ -458,7 +456,7 @@ exports.editeUser = async (req, res, next) => {
 
     if (req.file) {
       const prePhoto = user.photo;
-      deleteFile(prePhoto);
+      deleteDirAndFiles(prePhoto);
     }
 
     await User.findByIdAndUpdate(userId, {
@@ -529,8 +527,8 @@ exports.deleteUser = async (req, res, next) => {
       .select("photo -_id")
       .lean();
     const photoPath = user.photo;
-    if (photoPath != "public/profile_photo/default/placeholder-avatar.jpg") {
-      deleteFile(photoPath);
+    if (photoPath != "public/profile_photo/default/placeholder-avatar.png") {
+      deleteDirAndFiles(photoPath);
     }
     res.status(200).json("success");
   } catch (error) {
