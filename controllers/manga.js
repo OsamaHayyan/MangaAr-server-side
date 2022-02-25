@@ -263,13 +263,14 @@ exports.deleteManga = async (req, res, next) => {
     const mangaId = req.params.mangaId;
 
     const manga = await Manga.findByIdAndDelete(mangaId)
-      .select("chapters image category auther")
+      .select("chapters image banner category auther")
       .lean();
 
     if (!manga) {
       const message = "manga not found";
       errorCode(message, 400);
     }
+
     await Auther.updateOne(
       { _id: manga.auther },
       { $pull: { autherManga: mangaId } }
@@ -285,12 +286,14 @@ exports.deleteManga = async (req, res, next) => {
       { $pull: { recent: { manga: mangaId }, favorite: mangaId } }
     ).lean();
 
-    const dirImage = path.dirname(manga.image);
+    const mangaImage = path.join(manga.image);
+    const mangaBanner = manga.banner ? path.join(manga.banner) : null;
+    console.log(mangaBanner);
     const dirChapters =
       manga.chapters.length != 0
         ? path.dirname(path.dirname(manga.chapters[0].chapter[0]))
         : null;
-    await deleteDir([dirImage, dirChapters]);
+    await deleteDir([mangaImage, mangaBanner, dirChapters]);
 
     return res.status(200).json({ message: "deleted succefully" });
   } catch (error) {
