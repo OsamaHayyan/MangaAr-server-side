@@ -66,7 +66,7 @@ exports.putNews = async (req, res, next) => {
     }).lean();
 
     if (req.file) {
-      deleteDirAndFiles(news.poster);
+      await deleteDirAndFiles(news.poster);
     }
 
     res.status(200).json(news);
@@ -79,7 +79,7 @@ exports.deleteNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
     const news = await News.findByIdAndDelete(newsId).lean();
-    deleteDirAndFiles(news.poster);
+    await deleteDirAndFiles(news.poster);
     res.status(200).json("Deleted");
   } catch (error) {
     next(errorHandler(error));

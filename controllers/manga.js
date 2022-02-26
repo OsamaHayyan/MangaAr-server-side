@@ -18,7 +18,7 @@ exports.createManga = async (req, res, next) => {
     const { image, banner } = req.files;
     if (!image) {
       if (banner) {
-        deleteDirAndFiles(banner[0].path);
+        await deleteDirAndFiles(banner[0].path);
       }
       const message = "please add image";
       const statusCode = 400;
@@ -196,10 +196,10 @@ exports.putManga = async (req, res, next) => {
 
     //remove old image and banner
     if (imageUpdated) {
-      deleteDirAndFiles(manga.image);
+      await deleteDirAndFiles(manga.image);
     }
     if (bannerUpdated) {
-      deleteDirAndFiles(manga.banner);
+      await deleteDirAndFiles(manga.banner);
     }
 
     await Manga.updateOne(

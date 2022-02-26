@@ -456,7 +456,7 @@ exports.editeUser = async (req, res, next) => {
 
     if (req.file) {
       const prePhoto = user.photo;
-      deleteDirAndFiles(prePhoto);
+      await deleteDirAndFiles(prePhoto);
     }
 
     await User.findByIdAndUpdate(userId, {
@@ -528,7 +528,7 @@ exports.deleteUser = async (req, res, next) => {
       .lean();
     const photoPath = user.photo;
     if (photoPath != "public/profile_photo/default/placeholder-avatar.png") {
-      deleteDirAndFiles(photoPath);
+      await deleteDirAndFiles(photoPath);
     }
     res.status(200).json("success");
   } catch (error) {

@@ -98,8 +98,8 @@ exports.createChapter = async (req, res, next) => {
       image: manga.image,
     });
 
-    setTimeout(() => {
-      deleteDirAndFiles(chapter);
+    setTimeout(async () => {
+      await deleteDirAndFiles(chapter);
     }, 500);
 
     res.status(200).json("succes");
