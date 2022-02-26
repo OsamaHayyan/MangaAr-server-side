@@ -526,6 +526,9 @@ exports.deleteUser = async (req, res, next) => {
     const user = await User.findOneAndDelete({ _id: userId })
       .select("photo -_id")
       .lean();
+    if (!user) {
+      errorCode("User not found", 404);
+    }
     const photoPath = user.photo;
     if (photoPath != "public/profile_photo/default/placeholder-avatar.png") {
       await deleteDirAndFiles(photoPath);
