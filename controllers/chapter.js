@@ -208,6 +208,11 @@ exports.deleteChapter = async (req, res, next) => {
       { "recent.chapter": chapterId },
       { $pull: { recent: { chapter: chapterId } } }
     );
+
+    await last_releases
+      .deleteOne({ manga: mangaId, chapter: chapterId })
+      .lean();
+
     const dirname = path.dirname(manga.chapters[0].chapter[0]);
     await deleteDirAndFiles(dirname);
     return res.status(200).json("deleted");
