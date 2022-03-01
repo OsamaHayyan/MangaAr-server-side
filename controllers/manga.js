@@ -277,7 +277,7 @@ exports.deleteManga = async (req, res, next) => {
       { _id: manga.category },
       { $pull: { catManga: manga._id } }
     ).lean();
-    await last_releases.deleteOne({ manga: mangaId }).lean();
+    await last_releases.deleteMany({ manga: mangaId }).lean();
 
     await User.updateMany(
       { $or: [{ favorite: mangaId }, { "recent.manga": mangaId }] },
