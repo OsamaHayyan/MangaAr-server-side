@@ -7,7 +7,7 @@ const { webpConvertion } = require("../util/webpConvertion");
 exports.postNews = async (req, res, next) => {
   try {
     const { title, topic } = req.body;
-    const poster = req.file.path;
+    const poster = req.file?.path;
     if (!poster) {
       const message = "Please upload poster";
       errorCode(message, 400);
