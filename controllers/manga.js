@@ -331,6 +331,10 @@ exports.postRating = async (req, res, next) => {
       { $inc: { [rate]: 1 } },
       { new: true }
     ).select("rate");
+
+    if (!updateRate) {
+      return errorCode("Manga not found", 404);
+    }
     const finallRate = await updateRate.rate;
     res.status(200).json(finallRate);
   } catch (error) {
@@ -342,6 +346,9 @@ exports.getRating = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
     const rating = await Manga.findOne({ _id: mangaId }).select("rate");
+    if (!rating) {
+      return errorCode("Manga not found", 404);
+    }
     const rateResult = await rating.rate;
     res.status(200).json(rateResult);
   } catch (error) {
