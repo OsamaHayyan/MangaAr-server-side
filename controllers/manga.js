@@ -148,7 +148,7 @@ exports.getManga = async (req, res, next) => {
       { new: true }
     )
       .populate("auther category", "category autherName")
-      .select("-updatedAt -__v -createdAt");
+      .select("-updatedAt -__v -createdAt -chapters.chapter");
 
     manga.rate = await manga.rate;
     return res.status(200).json(manga);
