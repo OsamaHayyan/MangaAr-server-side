@@ -350,7 +350,7 @@ exports.getRating = async (req, res, next) => {
       return errorCode("Manga not found", 404);
     }
     const rateResult = await rating.rate;
-    res.status(200).json(rateResult);
+    res.status(200).json({ rate: rateResult });
   } catch (error) {
     next(errorHandler(error));
   }
