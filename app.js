@@ -24,11 +24,7 @@ const corsOptions = {
 
 const app = express();
 
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, "access.log"),
-  { flags: "a" }
-);
-
+app.use(helmet());
 app.use(compression());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
