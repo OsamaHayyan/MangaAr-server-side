@@ -1,7 +1,10 @@
 const express = require("express");
+const fs = require("fs");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
+const helmet = require("helmet");
+const compression = require("compression");
 const Manga = require("./routes/manga");
 const Auther = require("./routes/auther");
 const Chapters = require("./routes/chapter");
@@ -20,6 +23,13 @@ const corsOptions = {
 };
 
 const app = express();
+
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
+app.use(compression());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -67,6 +77,6 @@ const mongo = process.env.MONGO_URL;
     console.log("connected");
     return app.listen(port);
   } catch (error) {
-    console.log(err);
+    console.log(error);
   }
 })();
