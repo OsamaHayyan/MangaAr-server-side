@@ -62,7 +62,7 @@ app.use(async (error, req, res, next) => {
 });
 
 const port = process.env.PORT || 8080;
-const mongo = process.env.MONGO_URL;
+const mongo = process.env.MONGODB_ATLAS;
 (async () => {
   try {
     await mongoose.connect(mongo, {
