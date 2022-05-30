@@ -65,8 +65,11 @@ app.use(async (error, req, res, next) => {
 
 const port = process.env.PORT || 8080;
 const mongo = process.env.MONGODB_ATLAS;
+
 (async () => {
+  let maxTries = 2;
   try {
+    maxTries -= 1;
     await mongoose.connect(mongo, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -75,6 +78,17 @@ const mongo = process.env.MONGODB_ATLAS;
     console.log("connected");
     return app.listen(port);
   } catch (error) {
-    console.log(error);
+    if (maxTries > 0) {
+      maxTries -= 1;
+      await mongoose.connect(mongo, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+
+      console.log("connected");
+      return app.listen(port);
+    } else {
+      throw error;
+    }
   }
 })();
