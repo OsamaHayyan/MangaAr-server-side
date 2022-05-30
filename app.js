@@ -46,7 +46,9 @@ app.use(async (error, req, res, next) => {
   try {
     const status = error.statusCode || 500;
     let message = error.message;
-    const data = error.data?.map((d) => ({ msg: d.msg, param: d.param }));
+    const data = data
+      ? error.data?.map((d) => ({ msg: d.msg, param: d.param }))
+      : "Internal Server Error";
     if (status === 500) {
       message = "Faild to fetch";
     }
