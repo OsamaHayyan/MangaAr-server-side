@@ -66,8 +66,8 @@ exports.manga_validation = async (req, res, next) => {
 //////// validation logic
 const signUpValidation = async (req) => {
   try {
-    await body("username", "Please add username with 5 characters at least")
-      .isLength({ min: 5 })
+    await body("username", "Please add username with 4 characters at least")
+      .isLength({ min: 4, max: 15 })
       .run(req);
     await body("email")
       .isEmail()
