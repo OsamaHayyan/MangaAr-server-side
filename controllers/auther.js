@@ -12,6 +12,19 @@ exports.createAuther = async (req, res, next) => {
     next(errorHandler(error));
   }
 };
+exports.getAllAuthers = async (req, res, next) => {
+  try {
+    const auther = await Auther.find().select("autherName").lean();
+    if (!auther) {
+      const message = "auther not found";
+      errorCode(message, 400);
+    }
+
+    return res.status(200).json(auther);
+  } catch (error) {
+    next(errorHandler(error));
+  }
+};
 
 exports.getAuther = async (req, res, next) => {
   try {
