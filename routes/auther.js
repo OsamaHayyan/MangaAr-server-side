@@ -5,6 +5,7 @@ const {
   getAuther,
   modifyAuther,
   searchAuther,
+  getAllAuthers,
 } = require("../controllers/auther");
 const Auther = require("../models/auther");
 const { is_superuser } = require("../middleware/authorisation");
@@ -41,6 +42,8 @@ router.get(
   error_validation,
   getAuther
 );
+
+router.get("/get-authers", getAllAuthers);
 
 router.put(
   "/auther/:autherId",
