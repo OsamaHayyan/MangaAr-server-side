@@ -181,28 +181,31 @@ const MangaValidation = async (req) => {
         return true;
       })
       .run(req);
-
     await body("story", "Please add story with 10 charcters length at least")
       .isLength({ min: 10 })
       .run(req);
     await body("status", "please choose one of this status")
       .toLowerCase()
       .default("on going")
-      .equals(
-        "on going" ||
-          "finished" ||
-          "stopped" ||
-          "مستمرة" ||
-          "منتهية " ||
-          "متوقفة"
-      )
+      .custom(async (status, { req }) => {
+        let allStatus = [
+          "on going",
+          "finished",
+          "stopped",
+          "مستمرة",
+          "منتهية ",
+          "متوقفة",
+        ];
+        if (!allStatus.includes(status)) {
+          throw new Error("please choose one of this status");
+        }
+        return true;
+      })
       .run(req);
-
     await body("date", "please add a valid Date")
       .toDate()
       .exists({ checkNull: true })
       .run(req);
-
     await body("category", "Please Add a valid category")
       .isMongoId()
       .bail()
@@ -211,13 +214,11 @@ const MangaValidation = async (req) => {
         const catExistance = await Category.find({ _id: category })
           .select("_id")
           .lean();
-
         if (!Array.isArray(category)) {
           cat = [category];
         } else {
           cat = category;
         }
-
         if (!catExistance || catExistance.length < cat.length) {
           const message = "please add a valid category";
           throw new Error(message);
@@ -225,7 +226,6 @@ const MangaValidation = async (req) => {
         return true;
       })
       .run(req);
-
     await body("auther", "Please add an auther")
       .default(null)
       .if((value) => value != null)

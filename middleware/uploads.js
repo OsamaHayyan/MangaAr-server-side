@@ -315,14 +315,20 @@ const MangaValidation = async (req) => {
     await body("status", "please choose one of this status")
       .toLowerCase()
       .default("on going")
-      .equals(
-        "on going" ||
-          "finished" ||
-          "stopped" ||
-          "مستمرة" ||
-          "منتهية " ||
-          "متوقفة"
-      )
+      .custom(async (status, { req }) => {
+        let allStatus = [
+          "on going",
+          "finished",
+          "stopped",
+          "مستمرة",
+          "منتهية ",
+          "متوقفة",
+        ];
+        if (!allStatus.includes(status)) {
+          throw new Error("please choose one of this status");
+        }
+        return true;
+      })
       .run(req);
 
     await body("date", "please add a valid Date")
