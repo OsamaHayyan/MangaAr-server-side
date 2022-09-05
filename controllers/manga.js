@@ -305,9 +305,12 @@ exports.searchManga = async (req, res, next) => {
     if (query === null) {
       errorCode("Expected string, found null", 500);
     }
+    // for partial word search
+    //const manga = await Manga.find({ title: { $regex: query, $options: "i" } })
+
+    //for full word search
     const manga = await Manga.find({ $text: { $search: query } })
       .select("title image")
-      .limit(5)
       .lean();
     return res.status(200).json(manga);
   } catch (error) {
