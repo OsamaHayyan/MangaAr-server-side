@@ -34,11 +34,13 @@ const mangaSchema = new Schema(
       type: String,
       required: true,
     },
-    auther: {
-      type: Types.ObjectId,
-      ref: "Auther",
-      default: null,
-    },
+    auther: [
+      {
+        type: Types.ObjectId,
+        ref: "Auther",
+        default: null,
+      },
+    ],
     chapters: [
       {
         chapterNum: {
