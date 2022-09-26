@@ -54,7 +54,6 @@ exports.is_admin = async (req, res, next) => {
     }
 
     if (decodedToken.admin === false) {
-      console.log("osama");
       const message = "Not authorized";
       return errorCode(message, 401);
     }
