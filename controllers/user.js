@@ -2,12 +2,14 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import nodemalier from "nodemailer";
 import sendgridTransport from "nodemailer-sendgrid-transport";
+import dotenv from "dotenv";
 import User from "../models/user.js";
 
 import { errorCode, errorHandler } from "../error/errorsHandler.js";
 import { deleteDirAndFiles } from "../util/file.js";
 import { isObjectId } from "../util/is_objectId.js";
 import webpConvertion from "../util/webpConvertion.js";
+dotenv.config();
 
 export const signup = async (req, res, next) => {
   try {
