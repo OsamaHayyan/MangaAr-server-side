@@ -1,7 +1,5 @@
-const express = require("express");
-const router = express.Router();
-
-const {
+import { Router } from "express";
+import {
   createManga,
   getManga,
   putManga,
@@ -11,15 +9,17 @@ const {
   mostViewed,
   postRating,
   getRating,
-} = require("../controllers/manga");
-const {
+} from "../controllers/manga.js";
+import {
   manga_validation,
   error_validation,
-} = require("../middleware/error_validation");
-const { is_admin, is_superuser } = require("../middleware/authorisation");
-const { param } = require("express-validator");
+} from "../middleware/error_validation.js";
+import { is_admin, is_superuser } from "../middleware/authorisation.js";
+import { param } from "express-validator";
+import uploadMiddleware from "../middleware/uploads.js";
 
-const uploads = require("../middleware/uploads").fields([
+const router = Router();
+const uploads = uploadMiddleware.fields([
   { name: "image", maxCount: 1 },
   { name: "banner", maxCount: 1 },
 ]);
@@ -200,4 +200,4 @@ router.get(
   getRating
 );
 
-module.exports = router;
+export default router;

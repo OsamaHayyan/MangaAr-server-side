@@ -1,16 +1,16 @@
-const { Router } = require("express");
-const { body, param } = require("express-validator");
-const {
+import { Router } from "express";
+import { body, param } from "express-validator";
+import Category from "../models/category.js";
+import { is_superuser } from "../middleware/authorisation.js";
+import { error_validation } from "../middleware/error_validation.js";
+import {
   createCategory,
   modifyCat,
   getCat,
   deleteCat,
   getAllCat,
-} = require("../controllers/category");
-const { errorHandler } = require("../error/errorsHandler");
-const { error_validation } = require("../middleware/error_validation");
-const { is_superuser } = require("../middleware/authorisation");
-const Category = require("../models/category");
+} from "../controllers/category.js";
+
 const router = Router();
 
 router.post(
@@ -96,4 +96,4 @@ router.delete(
   deleteCat
 );
 
-module.exports = router;
+export default router;

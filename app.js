@@ -1,19 +1,22 @@
-const express = require("express");
-const fs = require("fs");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const path = require("path");
-const helmet = require("helmet");
-const compression = require("compression");
-const Manga = require("./routes/manga");
-const Auther = require("./routes/auther");
-const Chapters = require("./routes/chapter");
-const Category = require("./routes/category");
-const User = require("./routes/user");
-const last_releases = require("./routes/last_releases");
-const News = require("./routes/news");
-const cookieParser = require("cookie-parser");
-require("dotenv").config();
+import express from "express";
+import fs from "fs";
+import cors from "cors";
+import mongoose from "mongoose";
+import path, { dirname } from "path";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import compression from "compression";
+
+import Manga from "./routes/manga.js";
+import Auther from "./routes/auther.js";
+import Chapters from "./routes/chapter.js";
+import Category from "./routes/category.js";
+import User from "./routes/user.js";
+import last_releases from "./routes/last_releases.js";
+import News from "./routes/news.js";
+
+dotenv.config();
 
 const corsOptions = {
   origin: "http://localhost:3000",
@@ -33,7 +36,10 @@ app.use(express.json());
 
 app.use(cors(corsOptions));
 
-app.use("/public", express.static(path.join(__dirname, "public")));
+app.use(
+  "/public",
+  express.static(path.join(dirname(import.meta.url), "public"))
+);
 
 app.use("/last-release", last_releases);
 app.use("/user", User);

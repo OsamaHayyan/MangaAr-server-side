@@ -1,12 +1,12 @@
-const { validationResult, body, param } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const { errorHandler } = require("../error/errorsHandler");
-const User = require("../models/user");
-const Auther = require("../models/auther");
-const Manga = require("../models/manga");
-const Category = require("../models/category");
+import { validationResult, body, param } from "express-validator";
+import bcrypt from "bcryptjs";
+import { errorHandler } from "../error/errorsHandler.js";
+import Auther from "../models/auther.js";
+import Manga from "../models/manga.js";
+import User from "../models/user.js";
+import Category from "../models/category.js";
 
-exports.error_validation_multi = (req) => {
+export const error_validation_multi = (req) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed");
@@ -16,7 +16,7 @@ exports.error_validation_multi = (req) => {
   }
 };
 
-exports.error_validation = (req, res, next) => {
+export const error_validation = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed");
@@ -27,22 +27,22 @@ exports.error_validation = (req, res, next) => {
   next();
 };
 
-exports.signup_validation = async (req, res, next) => {
+export const signup_validation = async (req, res, next) => {
   try {
     if (!req.file) {
       await signUpValidation(req);
-      this.error_validation_multi(req);
+      error_validation_multi(req);
     }
     next();
   } catch (error) {
     next(errorHandler(error));
   }
 };
-exports.editeuser_validation = async (req, res, next) => {
+export const editeuser_validation = async (req, res, next) => {
   try {
     if (!req.file) {
       await editeUserValidation(req);
-      this.error_validation_multi(req);
+      error_validation_multi(req);
     }
     next();
   } catch (error) {
@@ -50,12 +50,12 @@ exports.editeuser_validation = async (req, res, next) => {
   }
 };
 
-exports.manga_validation = async (req, res, next) => {
+export const manga_validation = async (req, res, next) => {
   try {
     const { image, banner } = req.files;
     if (!image && !banner) {
       await MangaValidation(req);
-      this.error_validation_multi(req);
+      error_validation_multi(req);
     }
     next();
   } catch (error) {

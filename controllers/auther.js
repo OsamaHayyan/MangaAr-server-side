@@ -1,9 +1,8 @@
-const { errorCode, errorHandler } = require("../error/errorsHandler");
-const Auther = require("../models/auther");
-const Manga = require("../models/manga");
-const { isObjectId } = require("../util/is_objectId");
+import { errorCode, errorHandler } from "../error/errorsHandler.js";
+import Auther from "../models/auther.js";
+import Manga from "../models/manga.js";
 
-exports.createAuther = async (req, res, next) => {
+export const createAuther = async (req, res, next) => {
   try {
     const name = req.body.name;
     await Auther.create({ autherName: name });
@@ -12,7 +11,7 @@ exports.createAuther = async (req, res, next) => {
     next(errorHandler(error));
   }
 };
-exports.getAllAuthers = async (req, res, next) => {
+export const getAllAuthers = async (req, res, next) => {
   try {
     const auther = await Auther.find().select("autherName").lean();
     if (!auther) {
@@ -26,7 +25,7 @@ exports.getAllAuthers = async (req, res, next) => {
   }
 };
 
-exports.getAuther = async (req, res, next) => {
+export const getAuther = async (req, res, next) => {
   try {
     const autherId = req.params.autherId;
 
@@ -45,7 +44,7 @@ exports.getAuther = async (req, res, next) => {
   }
 };
 
-// exports.searchAuther = async (req, res, next) => {
+// export const searchAuther = async (req, res, next) => {
 //   try {
 //     const query = req.body.query;
 //     const auther = await Auther.find({ $text: { $search: query } }).select(
@@ -57,7 +56,7 @@ exports.getAuther = async (req, res, next) => {
 //   }
 // };
 
-exports.modifyAuther = async (req, res, next) => {
+export const modifyAuther = async (req, res, next) => {
   try {
     const autherId = req.params.autherId;
     const name = req.body.name;
@@ -76,7 +75,7 @@ exports.modifyAuther = async (req, res, next) => {
   }
 };
 
-exports.deleteAuther = async (req, res, next) => {
+export const deleteAuther = async (req, res, next) => {
   try {
     const autherId = req.params.autherId;
 

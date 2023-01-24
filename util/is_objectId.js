@@ -1,9 +1,9 @@
-const { Types } = require("mongoose");
-const { errorCode } = require("../error/errorsHandler");
-const { deleteFile } = require("./file");
+import mongoose from "mongoose";
+import { errorCode } from "../error/errorsHandler.js";
 
+const { Types } = mongoose;
 const ObjectId = Types.ObjectId;
-exports.isObjectId = async (obj) => {
+export const isObjectId = async (obj) => {
   const arrObj = Array.isArray(obj) ? obj : [obj];
   for await (el of arrObj) {
     if (ObjectId.isValid(el)) {
@@ -49,7 +49,7 @@ const isObjectValid = async (obj) => {
   }
 };
 
-exports.isObjectIdExtra = async (auther, other, other2) => {
+export const isObjectIdExtra = async (auther, other, other2) => {
   if (other2) {
     if (
       (auther != null && !(await isObjectValid(auther))) ||

@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const { errorHandler, errorCode } = require("../error/errorsHandler");
-const User = require("../models/user");
+import jwt from "jsonwebtoken";
+import { errorHandler, errorCode } from "../error/errorsHandler.js";
+import User from "../models/user.js";
 
-exports.is_superuser = async (req, res, next) => {
+export const is_superuser = async (req, res, next) => {
   try {
     const token = await req.cookies.access_token;
     if (!token) {
@@ -39,7 +39,7 @@ exports.is_superuser = async (req, res, next) => {
   }
 };
 
-exports.is_admin = async (req, res, next) => {
+export const is_admin = async (req, res, next) => {
   try {
     const token = await req.cookies.access_token;
     if (!token) {
@@ -76,7 +76,7 @@ exports.is_admin = async (req, res, next) => {
   }
 };
 
-exports.is_auth = async (req, res, next) => {
+export const is_auth = async (req, res, next) => {
   try {
     const token = await req.cookies.access_token;
     if (!token) {
@@ -107,7 +107,7 @@ exports.is_auth = async (req, res, next) => {
   }
 };
 
-exports.logedin = async (req, res, next) => {
+export const logedin = async (req, res, next) => {
   try {
     const token = await req.cookies.access_token;
     if (!token) {
@@ -130,7 +130,7 @@ exports.logedin = async (req, res, next) => {
   }
 };
 
-exports.noLogedIn = async (req, res, next) => {
+export const noLogedIn = async (req, res, next) => {
   try {
     const token = await req.cookies.access_token;
     if (token) {

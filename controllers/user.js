@@ -1,14 +1,15 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const nodemalier = require("nodemailer");
-const sendgridTransport = require("nodemailer-sendgrid-transport");
-const User = require("../models/user");
-const { errorCode, errorHandler } = require("../error/errorsHandler");
-const { deleteDirAndFiles } = require("../util/file");
-const { isObjectId } = require("../util/is_objectId");
-const { webpConvertion } = require("../util/webpConvertion");
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import nodemalier from "nodemailer";
+import sendgridTransport from "nodemailer-sendgrid-transport";
+import User from "../models/user.js";
 
-exports.signup = async (req, res, next) => {
+import { errorCode, errorHandler } from "../error/errorsHandler.js";
+import { deleteDirAndFiles } from "../util/file.js";
+import { isObjectId } from "../util/is_objectId.js";
+import webpConvertion from "../util/webpConvertion.js";
+
+export const signup = async (req, res, next) => {
   try {
     const email = req.body.email;
     const username = req.body.username;
@@ -38,7 +39,7 @@ exports.signup = async (req, res, next) => {
   }
 };
 
-exports.login = async (req, res, next) => {
+export const login = async (req, res, next) => {
   try {
     const email = req.body.email;
     const user = await User.findOne({ email: email })
@@ -71,7 +72,7 @@ exports.login = async (req, res, next) => {
   }
 };
 
-exports.logout = async (req, res, next) => {
+export const logout = async (req, res, next) => {
   try {
     return res
       .clearCookie("access_token")
@@ -82,7 +83,7 @@ exports.logout = async (req, res, next) => {
   }
 };
 
-exports.sendResetPwToken = async (req, res, next) => {
+export const sendResetPwToken = async (req, res, next) => {
   try {
     const email = req.body.email;
 
@@ -385,7 +386,7 @@ exports.sendResetPwToken = async (req, res, next) => {
   }
 };
 
-exports.checkToken = async (req, res, next) => {
+export const checkToken = async (req, res, next) => {
   try {
     const token = req.body.token;
     const email = req.body.email;
@@ -405,7 +406,7 @@ exports.checkToken = async (req, res, next) => {
   }
 };
 
-exports.resetPassword = async (req, res, next) => {
+export const resetPassword = async (req, res, next) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -431,7 +432,7 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
-exports.getUser = async (req, res, next) => {
+export const getUser = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     if (!userId) {
@@ -445,7 +446,7 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
-exports.editeUser = async (req, res, next) => {
+export const editeUser = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const username = req.body.username;
@@ -472,7 +473,7 @@ exports.editeUser = async (req, res, next) => {
   }
 };
 
-exports.editePassword = async (req, res, next) => {
+export const editePassword = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const newPw = req.body.password;
@@ -486,7 +487,7 @@ exports.editePassword = async (req, res, next) => {
   }
 };
 
-exports.getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (req, res, next) => {
   try {
     const page = req.query?.page || 1;
     const PAGE_SIZE = 10;
@@ -498,7 +499,7 @@ exports.getAllUsers = async (req, res, next) => {
   }
 };
 
-exports.addAdmin = async (req, res, next) => {
+export const addAdmin = async (req, res, next) => {
   try {
     const userId = req.body.userId;
 
@@ -509,7 +510,7 @@ exports.addAdmin = async (req, res, next) => {
   }
 };
 
-exports.removeAdmin = async (req, res, next) => {
+export const removeAdmin = async (req, res, next) => {
   try {
     const userId = req.body.userId;
 
@@ -520,7 +521,7 @@ exports.removeAdmin = async (req, res, next) => {
   }
 };
 
-exports.deleteUser = async (req, res, next) => {
+export const deleteUser = async (req, res, next) => {
   try {
     const userId = req.body.userId;
 
@@ -540,7 +541,7 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-exports.addFavorite = async (req, res, next) => {
+export const addFavorite = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const mangaId = req.params.mangaId;
@@ -560,7 +561,7 @@ exports.addFavorite = async (req, res, next) => {
   }
 };
 
-exports.getFavorite = async (req, res, next) => {
+export const getFavorite = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const user = await User.findById(userId)
@@ -572,7 +573,7 @@ exports.getFavorite = async (req, res, next) => {
   }
 };
 
-exports.deleteFavorite = async (req, res, next) => {
+export const deleteFavorite = async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const mangaId = req.params.mangaId;
@@ -589,7 +590,7 @@ exports.deleteFavorite = async (req, res, next) => {
   }
 };
 
-exports.getRecent = async (req, res, next) => {
+export const getRecent = async (req, res, next) => {
   try {
     const userId = req.user?.userId;
     if (!userId) {

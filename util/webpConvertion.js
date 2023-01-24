@@ -1,11 +1,10 @@
-const path = require("path");
-const { errorCode } = require("../error/errorsHandler");
+import path from "path";
+import { writeFile } from "fs/promises";
+import sharp from "sharp";
+import { errorCode } from "../error/errorsHandler.js";
+import { deleteDirAndFiles } from "./file.js";
 
-const { writeFile } = require("fs/promises");
-const sharp = require("sharp");
-const { deleteDirAndFiles } = require("./file");
-
-exports.webpConvertion = async (basePath, image, banner) => {
+const webpConvertion = async (basePath, image, banner) => {
   try {
     if (image && banner) {
       let container = [image, banner];
@@ -32,3 +31,5 @@ const imageConvertion = async (image, basePath) => {
   await writeFile(imageFullPath, webpImage);
   return imageFullPath;
 };
+
+export default webpConvertion;

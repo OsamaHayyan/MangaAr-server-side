@@ -1,4 +1,5 @@
-const { Schema, Types, model } = require("mongoose");
+import mongoose from "mongoose";
+const { Schema, Types, model } = mongoose;
 
 const mangaSchema = new Schema(
   {
@@ -101,4 +102,4 @@ async function rateWeightedAverage(rate) {
   }
 }
 // mangaSchema.index({ title: "text" });
-module.exports = model("Manga", mangaSchema);
+export default model("Manga", mangaSchema);

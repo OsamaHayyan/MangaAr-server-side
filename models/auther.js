@@ -1,4 +1,5 @@
-const { Schema, Types, model } = require("mongoose");
+import mongoose from "mongoose";
+const { Schema, Types, model } = mongoose;
 
 const autherSchema = new Schema({
   autherName: {
@@ -14,4 +15,5 @@ const autherSchema = new Schema({
 });
 
 // autherSchema.index({ autherName: "text" });
-module.exports = model("Auther", autherSchema);
+
+export default model("Auther", autherSchema);

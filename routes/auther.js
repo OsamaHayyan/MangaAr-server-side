@@ -1,16 +1,17 @@
-const { Router } = require("express");
-const {
+import { Router } from "express";
+import { body, param } from "express-validator";
+
+import {
   createAuther,
   deleteAuther,
   getAuther,
   modifyAuther,
-  searchAuther,
   getAllAuthers,
-} = require("../controllers/auther");
-const Auther = require("../models/auther");
-const { is_superuser } = require("../middleware/authorisation");
-const { body, param } = require("express-validator");
-const { error_validation } = require("../middleware/error_validation");
+} from "../controllers/auther.js";
+import Auther from "../models/auther.js";
+import { is_superuser } from "../middleware/authorisation.js";
+import { error_validation } from "../middleware/error_validation.js";
+
 const router = Router();
 
 router.post(
@@ -84,6 +85,4 @@ router.delete(
   deleteAuther
 );
 
-// router.post("/search-auther", searchAuther);
-
-module.exports = router;
+export default router;

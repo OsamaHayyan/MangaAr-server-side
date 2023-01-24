@@ -1,8 +1,7 @@
-const express = require("express");
-const { body, query } = require("express-validator");
-const bcrypt = require("bcryptjs");
-const router = express.Router();
-const {
+import { Router } from "express";
+import { body, query } from "express-validator";
+import bcrypt from "bcryptjs";
+import {
   signup,
   login,
   logout,
@@ -18,20 +17,21 @@ const {
   getRecent,
   addFavorite,
   deleteFavorite,
-} = require("../controllers/user");
-const {
+} from "../controllers/user.js";
+import {
   error_validation,
   signup_validation,
   editeuser_validation,
-} = require("../middleware/error_validation");
-const {
+} from "../middleware/error_validation.js";
+import {
   is_superuser,
   is_auth,
   noLogedIn,
-} = require("../middleware/authorisation");
+} from "../middleware/authorisation.js";
+import uploads from "../middleware/uploads.js";
+import User from "../models/user.js";
 
-const uploads = require("../middleware/uploads");
-const User = require("../models/user");
+const router = Router();
 
 router.post(
   "/signup",
@@ -212,4 +212,4 @@ router.delete(
   deleteUser
 );
 
-module.exports = router;
+export default router;

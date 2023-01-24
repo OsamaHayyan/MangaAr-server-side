@@ -1,12 +1,10 @@
-const { response } = require("express");
-
-exports.errorCode = (message, statusCode) => {
+export const errorCode = (message, statusCode) => {
   const error = new Error(message);
   error.statusCode = statusCode;
   throw error;
 };
 
-exports.errorHandler = (error) => {
+export const errorHandler = (error) => {
   if (!error.statusCode) {
     error.statusCode = 500;
   }

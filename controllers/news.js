@@ -1,10 +1,10 @@
-const { errorHandler, errorCode } = require("../error/errorsHandler");
-const News = require("../models/news");
-const { deleteDirAndFiles } = require("../util/file");
-const { pagination } = require("../util/pagination");
-const { webpConvertion } = require("../util/webpConvertion");
+import News from "../models/news.js";
+import { errorCode, errorHandler } from "../error/errorsHandler.js";
+import { deleteDirAndFiles } from "../util/file.js";
+import pagination from "../util/pagination.js";
+import webpConvertion from "../util/webpConvertion.js";
 
-exports.postNews = async (req, res, next) => {
+export const postNews = async (req, res, next) => {
   try {
     const { title, topic } = req.body;
     const poster = req.file?.path;
@@ -20,7 +20,7 @@ exports.postNews = async (req, res, next) => {
   }
 };
 
-exports.getAllNews = async (req, res, next) => {
+export const getAllNews = async (req, res, next) => {
   try {
     const pageNum = req.query?.page || 1;
     const { skip, PAGE_SIZE } = await pagination(pageNum, 20);
@@ -38,7 +38,7 @@ exports.getAllNews = async (req, res, next) => {
   }
 };
 
-exports.getNews = async (req, res, next) => {
+export const getNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
     const news = await News.findById(newsId).lean();
@@ -52,7 +52,7 @@ exports.getNews = async (req, res, next) => {
   }
 };
 
-exports.putNews = async (req, res, next) => {
+export const putNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
     const { title, topic } = req.body;
@@ -75,7 +75,7 @@ exports.putNews = async (req, res, next) => {
   }
 };
 
-exports.deleteNews = async (req, res, next) => {
+export const deleteNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
     const news = await News.findByIdAndDelete(newsId).lean();

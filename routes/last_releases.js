@@ -1,8 +1,8 @@
-const express = require("express");
-const { query } = require("express-validator");
-const { lastReleases } = require("../controllers/last_releases");
-const { error_validation } = require("../middleware/error_validation");
-const router = express.Router();
+import { Router } from "express";
+import { query } from "express-validator";
+import { lastReleases } from "../controllers/last_releases.js";
+import { error_validation } from "../middleware/error_validation.js";
+const router = Router();
 
 router.get(
   "/",
@@ -11,4 +11,4 @@ router.get(
   lastReleases
 );
 
-module.exports = router;
+export default router;

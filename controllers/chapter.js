@@ -1,15 +1,14 @@
-const sharp = require("sharp");
-const path = require("path");
-const slices = require("slices");
-const { errorCode, errorHandler } = require("../error/errorsHandler");
-const Manga = require("../models/manga");
-const User = require("../models/user");
+import sharp from "sharp";
+import path from "path";
+import slices from "slices";
+import Manga from "../models/manga.js";
+import User from "../models/user.js";
+import last_releases from "../models/last_releases.js";
+import { deleteDirAndFiles } from "../util/file.js";
+import { isObjectId } from "../util/is_objectId.js";
+import { errorCode, errorHandler } from "../error/errorsHandler.js";
 
-const { deleteDirAndFiles } = require("../util/file");
-const { isObjectId } = require("../util/is_objectId");
-const last_releases = require("../models/last_releases");
-
-exports.createChapter = async (req, res, next) => {
+export const createChapter = async (req, res, next) => {
   try {
     const mangaId = req.body.mangaId;
     const chapterNum = req.body.chapterNum;
@@ -108,7 +107,7 @@ exports.createChapter = async (req, res, next) => {
   }
 };
 
-exports.getAllChapters = async (req, res, next) => {
+export const getAllChapters = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
     await isObjectId(mangaId);
@@ -119,7 +118,7 @@ exports.getAllChapters = async (req, res, next) => {
   }
 };
 
-exports.getChapter = async (req, res, next) => {
+export const getChapter = async (req, res, next) => {
   try {
     const userId = req.user?.userId;
     const mangaId = req.body.mangaId;
@@ -182,7 +181,7 @@ exports.getChapter = async (req, res, next) => {
   }
 };
 
-exports.deleteChapter = async (req, res, next) => {
+export const deleteChapter = async (req, res, next) => {
   try {
     const mangaId = req.body.mangaId;
     const chapterId = req.params.chapterId;

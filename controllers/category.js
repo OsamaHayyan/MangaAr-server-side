@@ -1,9 +1,9 @@
-const { errorHandler, errorCode } = require("../error/errorsHandler");
-const Category = require("../models/category");
-const Manga = require("../models/manga");
-const { isObjectId } = require("../util/is_objectId");
+import { errorHandler, errorCode } from "../error/errorsHandler.js";
+import Category from "../models/category.js";
+import Manga from "../models/manga.js";
+import { isObjectId } from "../util/is_objectId.js";
 
-exports.createCategory = async (req, res, next) => {
+export const createCategory = async (req, res, next) => {
   try {
     const cat = req.body.category;
     await Category.create({ category: cat });
@@ -13,7 +13,7 @@ exports.createCategory = async (req, res, next) => {
   }
 };
 
-exports.getCat = async (req, res, next) => {
+export const getCat = async (req, res, next) => {
   try {
     const catId = req.params.catId;
 
@@ -31,7 +31,7 @@ exports.getCat = async (req, res, next) => {
   }
 };
 
-exports.getAllCat = async (req, res, next) => {
+export const getAllCat = async (req, res, next) => {
   try {
     const category = await Category.find().select("category").lean();
     return res.status(200).json(category);
@@ -40,7 +40,7 @@ exports.getAllCat = async (req, res, next) => {
   }
 };
 
-exports.modifyCat = async (req, res, next) => {
+export const modifyCat = async (req, res, next) => {
   try {
     const catId = req.params.catId;
     const catName = req.body.category;
@@ -52,7 +52,7 @@ exports.modifyCat = async (req, res, next) => {
   }
 };
 
-exports.deleteCat = async (req, res, next) => {
+export const deleteCat = async (req, res, next) => {
   try {
     const catId = req.params.catId;
     if (!catId) {

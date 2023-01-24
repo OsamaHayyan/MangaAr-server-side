@@ -1,8 +1,8 @@
-const { rm } = require("fs/promises");
-const path = require("path");
-const { errorCode } = require("../error/errorsHandler");
+import { rm } from "fs/promises";
+import path from "path";
+import { errorCode } from "../error/errorsHandler.js";
 
-exports.deleteDirAndFiles = async (dirOrFile) => {
+export const deleteDirAndFiles = async (dirOrFile) => {
   try {
     if (Array.isArray(dirOrFile)) {
       for await (d of dirOrFile) {

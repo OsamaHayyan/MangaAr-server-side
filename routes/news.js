@@ -1,16 +1,17 @@
-const express = require("express");
-const { param } = require("express-validator");
-const {
+import { Router } from "express";
+import { param } from "express-validator";
+import {
   postNews,
   getAllNews,
   getNews,
   putNews,
   deleteNews,
-} = require("../controllers/news");
-const { is_superuser } = require("../middleware/authorisation");
-const { error_validation } = require("../middleware/error_validation");
-const router = express.Router();
-const uploads = require("../middleware/uploads").single("poster");
+} from "../controllers/news.js";
+import { is_superuser } from "../middleware/authorisation.js";
+import { error_validation } from "../middleware/error_validation.js";
+import uploadMiddleware from "../middleware/uploads.js";
+const uploads = uploadMiddleware.single("poster");
+const router = Router();
 
 /*
 @POST: /news/create-news/
@@ -110,4 +111,4 @@ router.delete(
   deleteNews
 );
 
-module.exports = router;
+export default router;

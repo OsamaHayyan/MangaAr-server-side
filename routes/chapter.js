@@ -1,20 +1,23 @@
-const express = require("express");
-const multer = require("multer");
-const {
+import { Router } from "express";
+import { is_admin, logedin } from "../middleware/authorisation.js";
+import {
   createChapter,
   getChapter,
   deleteChapter,
-} = require("../controllers/chapter");
+} from "../controllers/chapter.js";
+import uploads from "../middleware/uploads.js";
 
-const { errorHandler } = require("../error/errorsHandler");
-const router = express.Router();
-const uploads = require("../middleware/uploads").array("photos", 100);
-const { is_admin, logedin } = require("../middleware/authorisation");
+const router = Router();
 
-router.post("/add-chapter", is_admin, uploads, createChapter);
+router.post(
+  "/add-chapter",
+  is_admin,
+  uploads.array("photos", 100),
+  createChapter
+);
 
 router.get("/get-chapter/:chapterId", logedin, getChapter);
 
 router.delete("/delete-chapter/:chapterId", is_admin, deleteChapter);
 
-module.exports = router;
+export default router;

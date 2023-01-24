@@ -1,7 +1,7 @@
-const last_releases = require("../models/last_releases");
-const { pagination } = require("../util/pagination");
+import last_releases from "../models/last_releases.js";
+import pagination from "../util/pagination.js";
 
-exports.lastReleases = async (req, res, next) => {
+export const lastReleases = async (req, res, next) => {
   try {
     const pageNum = req.query?.page || 1;
     const { skip, PAGE_SIZE } = await pagination(pageNum, 20);

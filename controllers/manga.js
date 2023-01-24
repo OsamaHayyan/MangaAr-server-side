@@ -1,19 +1,18 @@
-const path = require("path");
-const { errorCode, errorHandler } = require("../error/errorsHandler");
-const Auther = require("../models/auther");
-const Manga = require("../models/manga");
-const Category = require("../models/category");
-const last_releases = require("../models/last_releases");
-const User = require("../models/user");
-
-const { deleteDirAndFiles } = require("../util/file");
-const { isObjectId } = require("../util/is_objectId");
-const { pagination } = require("../util/pagination");
-const { webpConvertion } = require("../util/webpConvertion");
+import path from "path";
+import { errorCode, errorHandler } from "../error/errorsHandler.js";
+import Auther from "../models/auther.js";
+import Manga from "../models/manga.js";
+import User from "../models/user.js";
+import last_releases from "../models/last_releases.js";
+import Category from "../models/category.js";
+import { deleteDirAndFiles } from "../util/file.js";
+import { isObjectId } from "../util/is_objectId.js";
+import pagination from "../util/pagination.js";
+import webpConvertion from "../util/webpConvertion.js";
 
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
-exports.createManga = async (req, res, next) => {
+export const createManga = async (req, res, next) => {
   try {
     const { image, banner } = req.files;
     if (!image) {
@@ -39,37 +38,37 @@ exports.createManga = async (req, res, next) => {
     const imageUrl = banner ? mangaWebpPath[0] : mangaWebpPath;
     const bannerUrl = banner ? mangaWebpPath[1] : null;
 
-    const manga = await Manga.create({
-      title: title,
-      category: category,
-      story: story,
-      status: status,
-      date: date.getFullYear(),
-      auther: auther,
-      image: imageUrl,
-      banner: bannerUrl,
-    });
+    // const manga = await Manga.create({
+    //   title: title,
+    //   category: category,
+    //   story: story,
+    //   status: status,
+    //   date: date.getFullYear(),
+    //   auther: auther,
+    //   image: imageUrl,
+    //   banner: bannerUrl,
+    // });
 
-    if (auther != null) {
-      await Auther.updateOne(
-        { _id: auther },
-        {
-          $push: { autherManga: manga._id },
-        }
-      ).lean();
-    }
+    // if (auther != null) {
+    //   await Auther.updateOne(
+    //     { _id: auther },
+    //     {
+    //       $push: { autherManga: manga._id },
+    //     }
+    //   ).lean();
+    // }
 
-    await Category.updateMany(
-      { _id: category },
-      { $push: { catManga: manga._id } }
-    ).lean();
+    // await Category.updateMany(
+    //   { _id: category },
+    //   { $push: { catManga: manga._id } }
+    // ).lean();
     return res.status(201).json({ message: "success" });
   } catch (error) {
     next(errorHandler(error));
   }
 };
 
-exports.getAllManga = async (req, res, next) => {
+export const getAllManga = async (req, res, next) => {
   try {
     let { catId, orderBy, page } = req.query;
     if (catId && catId != "all") await isObjectId(catId);
@@ -136,7 +135,7 @@ exports.getAllManga = async (req, res, next) => {
   }
 };
 
-exports.getManga = async (req, res, next) => {
+export const getManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
 
@@ -157,7 +156,7 @@ exports.getManga = async (req, res, next) => {
   }
 };
 
-exports.mostViewed = async (req, res, next) => {
+export const mostViewed = async (req, res, next) => {
   try {
     const manga = await Manga.find()
       .select("views title image")
@@ -170,7 +169,7 @@ exports.mostViewed = async (req, res, next) => {
   }
 };
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
-exports.putManga = async (req, res, next) => {
+export const putManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
     const title = req.body.title;
@@ -256,7 +255,7 @@ exports.putManga = async (req, res, next) => {
   }
 };
 
-exports.deleteManga = async (req, res, next) => {
+export const deleteManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
 
@@ -299,7 +298,7 @@ exports.deleteManga = async (req, res, next) => {
   }
 };
 
-exports.searchManga = async (req, res, next) => {
+export const searchManga = async (req, res, next) => {
   try {
     const query = req.body.query;
     if (query === null) {
@@ -318,7 +317,7 @@ exports.searchManga = async (req, res, next) => {
   }
 };
 
-exports.postRating = async (req, res, next) => {
+export const postRating = async (req, res, next) => {
   try {
     const rating = req.body.rate; //number of star which was checked in client-side
     const mangaId = req.params.mangaId;
@@ -345,7 +344,7 @@ exports.postRating = async (req, res, next) => {
   }
 };
 
-exports.getRating = async (req, res, next) => {
+export const getRating = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
     const rating = await Manga.findOne({ _id: mangaId }).select("rate");

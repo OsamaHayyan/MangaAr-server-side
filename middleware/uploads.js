@@ -1,17 +1,14 @@
-const multer = require("multer");
-const path = require("path");
-const bcrypt = require("bcryptjs");
-
-const Manga = require("../models/manga");
-const Category = require("../models/category");
-const Auther = require("../models/auther");
-const User = require("../models/user");
-const News = require("../models/news");
-
-const fs = require("fs");
-const { deleteDir } = require("../util/file");
-const { body, param } = require("express-validator");
-const { error_validation_multi } = require("./error_validation");
+import multer from "multer";
+import path from "path";
+import bcrypt from "bcryptjs";
+import fs from "fs";
+import Auther from "../models/auther.js";
+import Manga from "../models/manga.js";
+import User from "../models/user.js";
+import News from "../models/news.js";
+import Category from "../models/category.js";
+import { body, param } from "express-validator";
+import { error_validation_multi } from "./error_validation.js";
 
 const fileStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
@@ -147,7 +144,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-module.exports = multer({
+export default multer({
   storage: fileStorage,
   fileFilter: fileFilter,
 });
