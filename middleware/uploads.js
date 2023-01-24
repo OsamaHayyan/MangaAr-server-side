@@ -9,6 +9,7 @@ import News from "../models/news.js";
 import Category from "../models/category.js";
 import { body, param } from "express-validator";
 import { error_validation_multi } from "./error_validation.js";
+import __dirname from "../util/__dirname.js";
 
 const fileStorage = multer.diskStorage({
   destination: async (req, file, cb) => {

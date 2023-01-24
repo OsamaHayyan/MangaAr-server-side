@@ -1,6 +1,7 @@
 import { rm } from "fs/promises";
 import path from "path";
 import { errorCode } from "../error/errorsHandler.js";
+import __dirname from "./__dirname.js";
 
 export const deleteDirAndFiles = async (dirOrFile) => {
   try {

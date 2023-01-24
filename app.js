@@ -15,6 +15,7 @@ import Category from "./routes/category.js";
 import User from "./routes/user.js";
 import last_releases from "./routes/last_releases.js";
 import News from "./routes/news.js";
+import __dirname from "./util/__dirname.js";
 
 dotenv.config();
 
@@ -36,10 +37,7 @@ app.use(express.json());
 
 app.use(cors(corsOptions));
 
-app.use(
-  "/public",
-  express.static(path.join(dirname(import.meta.url), "public"))
-);
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use("/last-release", last_releases);
 app.use("/user", User);
