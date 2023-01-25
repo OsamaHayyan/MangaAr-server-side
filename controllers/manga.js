@@ -38,30 +38,30 @@ export const createManga = async (req, res, next) => {
     const imageUrl = banner ? mangaWebpPath[0] : mangaWebpPath;
     const bannerUrl = banner ? mangaWebpPath[1] : null;
 
-    // const manga = await Manga.create({
-    //   title: title,
-    //   category: category,
-    //   story: story,
-    //   status: status,
-    //   date: date.getFullYear(),
-    //   auther: auther,
-    //   image: imageUrl,
-    //   banner: bannerUrl,
-    // });
+    const manga = await Manga.create({
+      title: title,
+      category: category,
+      story: story,
+      status: status,
+      date: date.getFullYear(),
+      auther: auther,
+      image: imageUrl,
+      banner: bannerUrl,
+    });
 
-    // if (auther != null) {
-    //   await Auther.updateOne(
-    //     { _id: auther },
-    //     {
-    //       $push: { autherManga: manga._id },
-    //     }
-    //   ).lean();
-    // }
+    if (auther != null) {
+      await Auther.updateOne(
+        { _id: auther },
+        {
+          $push: { autherManga: manga._id },
+        }
+      ).lean();
+    }
 
-    // await Category.updateMany(
-    //   { _id: category },
-    //   { $push: { catManga: manga._id } }
-    // ).lean();
+    await Category.updateMany(
+      { _id: category },
+      { $push: { catManga: manga._id } }
+    ).lean();
     return res.status(201).json({ message: "success" });
   } catch (error) {
     next(errorHandler(error));
