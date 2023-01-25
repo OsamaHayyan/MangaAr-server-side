@@ -26,7 +26,7 @@ const webpConvertion = async (basePath, image, banner) => {
 const imageConvertion = async (image, basePath) => {
   const webpImage = await sharp(image).webp({ quality: 60 }).toBuffer();
   const newImageExtention = `${path.parse(image).name}.webp`;
-  const imageFullPath = path.join("public/", basePath, newImageExtention);
+  const imageFullPath = path.join("public", basePath, newImageExtention);
   await deleteDirAndFiles(image);
   await writeFile(imageFullPath, webpImage);
   return imageFullPath;

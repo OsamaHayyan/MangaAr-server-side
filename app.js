@@ -37,7 +37,10 @@ app.use(express.json());
 
 app.use(cors(corsOptions));
 
-app.use("/public", express.static(path.join(__dirname, "public")));
+app.use(
+  "/public",
+  express.static(path.join(__dirname(import.meta.url), "public"))
+);
 
 app.use("/last-release", last_releases);
 app.use("/user", User);

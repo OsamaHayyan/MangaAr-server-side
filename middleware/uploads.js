@@ -25,7 +25,7 @@ const fileStorage = multer.diskStorage({
           error_validation_multi(req);
 
           const dir = path.join(
-            __dirname,
+            __dirname(import.meta.url),
             "..",
             "public",
             "chapters",
@@ -42,7 +42,12 @@ const fileStorage = multer.diskStorage({
         case "profile_photo": {
           await signUpValidation(req);
           error_validation_multi(req);
-          const dir = path.join(__dirname, "..", "public", "profile_photo");
+          const dir = path.join(
+            __dirname(import.meta.url),
+            "..",
+            "public",
+            "profile_photo"
+          );
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
           }
@@ -53,7 +58,12 @@ const fileStorage = multer.diskStorage({
           await editeUserValidation(req);
           error_validation_multi(req);
 
-          const dir = path.join(__dirname, "..", "public", "profile_photo");
+          const dir = path.join(
+            __dirname(import.meta.url),
+            "..",
+            "public",
+            "profile_photo"
+          );
 
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -66,7 +76,12 @@ const fileStorage = multer.diskStorage({
           await newsValidation(req);
           error_validation_multi(req);
 
-          const dir = path.join(__dirname, "..", "public", "news");
+          const dir = path.join(
+            __dirname(import.meta.url),
+            "..",
+            "public",
+            "news"
+          );
 
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -81,7 +96,12 @@ const fileStorage = multer.diskStorage({
           await MangaValidation(req);
           error_validation_multi(req);
 
-          const dir = path.join(__dirname, "..", "public", "manga_images");
+          const dir = path.join(
+            __dirname(import.meta.url),
+            "..",
+            "public",
+            "manga_images"
+          );
 
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -96,7 +116,12 @@ const fileStorage = multer.diskStorage({
           await MangaValidation(req);
           error_validation_multi(req);
 
-          const dir = path.join(__dirname, "..", "public", "manga_images");
+          const dir = path.join(
+            __dirname(import.meta.url),
+            "..",
+            "public",
+            "manga_images"
+          );
 
           if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });

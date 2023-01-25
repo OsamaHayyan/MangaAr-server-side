@@ -8,12 +8,12 @@ export const deleteDirAndFiles = async (dirOrFile) => {
     if (Array.isArray(dirOrFile)) {
       for await (d of dirOrFile) {
         if (d == null) return;
-        d = path.join(__dirname, "..", d);
+        d = path.join(__dirname(import.meta.url), "..", d);
         await rm(d, { recursive: true });
       }
     } else {
       if (dirOrFile == null) return;
-      dirOrFile = path.join(__dirname, "..", dirOrFile);
+      dirOrFile = path.join(__dirname(import.meta.url), "..", dirOrFile);
       await rm(dirOrFile, { recursive: true });
     }
   } catch (error) {
