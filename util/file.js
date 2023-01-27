@@ -6,7 +6,7 @@ import __dirname from "./__dirname.js";
 export const deleteDirAndFiles = async (dirOrFile) => {
   try {
     if (Array.isArray(dirOrFile)) {
-      for await (d of dirOrFile) {
+      for await (let d of dirOrFile) {
         if (d == null) return;
         d = path.join(__dirname(import.meta.url), "..", d);
         await rm(d, { recursive: true });

@@ -14,7 +14,6 @@ export const createChapter = async (req, res, next) => {
     const chapterNum = req.body.chapterNum;
     const chapterName = req.body.name ? req.body.name : chapterNum;
     const date = new Date().toISOString().split("T")[0];
-    console.log(date);
     const chapter = req.files
       .map((c) => c.path)
       .sort((a, b) => {
@@ -28,7 +27,7 @@ export const createChapter = async (req, res, next) => {
 
     let page = 1;
     let images = [];
-    for await (c of chapter) {
+    for await (const c of chapter) {
       try {
         let count = 1;
         let image = sharp(c);
@@ -60,10 +59,22 @@ export const createChapter = async (req, res, next) => {
             })
             .webp({ quality: 80 })
             .toFile(
-              `public/chapters/${mangaId}/${chapterNum}/page_${page}-${count}-${date}.webp`
+              path.join(
+                "public",
+                "chapters",
+                mangaId,
+                chapterNum,
+                `page_${page}-${count}-${date}.webp`
+              )
             );
           images.push(
-            `public/chapters/${mangaId}/${chapterNum}/page_${page}-${count}-${date}.webp`
+            path.join(
+              "public",
+              "chapters",
+              mangaId,
+              chapterNum,
+              `page_${page}-${count}-${date}.webp`
+            )
           );
           count++;
         });
@@ -170,7 +181,6 @@ export const getChapter = async (req, res, next) => {
           recent: { $size: 11 },
         });
         if (recentCount) {
-          console.log("osama");
           await User.updateOne({ _id: userId }, { $pop: { recent: -1 } });
         }
       }
