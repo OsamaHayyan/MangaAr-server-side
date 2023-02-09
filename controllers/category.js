@@ -34,7 +34,6 @@ export const getCat = async (req, res, next) => {
 export const getAllCat = async (req, res, next) => {
   try {
     let category = await Category.find().lean();
-    category = category.filter((c) => c.catManga.length > 0);
     return res.status(200).json(category);
   } catch (error) {
     next(errorHandler(error));
