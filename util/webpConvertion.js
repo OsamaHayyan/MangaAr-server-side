@@ -9,7 +9,7 @@ const webpConvertion = async (basePath, image, banner) => {
     if (image && banner) {
       let container = [image, banner];
       let resultPaths = [];
-      for await (img of container) {
+      for await (const img of container) {
         let path = await imageConvertion(img, basePath);
         resultPaths.push(path);
       }
