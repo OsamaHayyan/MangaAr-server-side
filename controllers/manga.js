@@ -217,7 +217,7 @@ export const putManga = async (req, res, next) => {
 
     if (preAuth) {
       if (autherUpdated != preAuth) {
-        await Auther.updateOne(
+        await Auther.updateMany(
           { _id: preAuth },
           {
             $pull: { autherManga: mangaId },
@@ -268,7 +268,7 @@ export const deleteManga = async (req, res, next) => {
       errorCode(message, 400);
     }
 
-    await Auther.updateOne(
+    await Auther.updateMany(
       { _id: manga.auther },
       { $pull: { autherManga: mangaId } }
     ).lean();
