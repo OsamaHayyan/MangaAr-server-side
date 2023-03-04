@@ -50,6 +50,15 @@ const userSchema = new Schema(
         ref: "Manga",
       },
     ],
+    rate: [
+      {
+        mangaId: {
+          type: Types.ObjectId,
+          ref: "Manga",
+        },
+        rateNum: Number,
+      },
+    ],
     admin: {
       type: Boolean,
       required: true,
