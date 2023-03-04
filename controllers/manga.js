@@ -320,22 +320,56 @@ export const searchManga = async (req, res, next) => {
 export const postRating = async (req, res, next) => {
   try {
     const rating = req.body.rate; //number of star which was checked in client-side
+    const { userId }  = req.user;
     const mangaId = req.params.mangaId;
     const possibleResult = ["1", "2", "3", "4", "5"];
     const rateCheck = possibleResult.includes(rating.toString()); //check if valid rate
+    const {rate: userRates} = await User.findById(userId).select("rate").lean();
+    let prevUserRate;
+    const notAcceptedRate =
+      userRates.length > 0 &&
+      userRates.some((u) => u.mangaId == mangaId && u.rateNum.toString() == rating.toString());
+    if (notAcceptedRate) return res.status(200).json("done");
+    const userRated =
+      userRates.length > 0 && userRates.some((el) => {if(el.mangaId == mangaId){
+        prevUserRate = el
+        return true
+      }});
     if (!rateCheck) {
       const message = "please add valid rate";
       errorCode(message, 400);
     }
     const rate = `rate.${rating}`;
-    const updateRate = await Manga.findByIdAndUpdate(
-      { _id: mangaId },
-      { $inc: { [rate]: 1 } },
-      { new: true }
-    ).select("rate");
+    const updateRate =
+    prevUserRate && prevUserRate.mangaId == mangaId
+        ? await Manga.findByIdAndUpdate(
+            { _id: mangaId },
+            { $inc: { [rate]: 1, [`rate.${prevUserRate.rateNum}`]: -1 } },
+            { new: true }
+          ).select("rate")
+        : await Manga.findByIdAndUpdate(
+            { _id: mangaId },
+            { $inc: { [rate]: 1 } },
+            { new: true }
+          ).select("rate");
 
     if (!updateRate) {
       return errorCode("Manga not found", 404);
+    }
+    if (userRated) {
+      await User.updateOne(
+        { _id: userId, "rate.mangaId": mangaId },
+        {
+          $set: { "rate.$.rateNum": rating },
+        }
+      );
+    } else {
+      await User.updateOne(
+        { _id: userId },
+        {
+          $push: { rate: { mangaId: mangaId, rateNum: rating } },
+        }
+      );
     }
     const finallRate = await updateRate.rate;
     res.status(200).json(finallRate);
