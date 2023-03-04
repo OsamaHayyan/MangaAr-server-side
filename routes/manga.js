@@ -14,7 +14,7 @@ import {
   manga_validation,
   error_validation,
 } from "../middleware/error_validation.js";
-import { is_admin, is_superuser } from "../middleware/authorisation.js";
+import { is_admin, is_auth, is_superuser } from "../middleware/authorisation.js";
 import { param } from "express-validator";
 import uploadMiddleware from "../middleware/uploads.js";
 
@@ -180,6 +180,7 @@ router.post("/search-manga", searchManga);
 */
 router.post(
   "/rate/:mangaId",
+  is_auth,
   param("mangaId", "Manga Not Found").isMongoId(),
   error_validation,
   postRating
