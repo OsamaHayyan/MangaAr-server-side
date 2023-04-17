@@ -77,7 +77,6 @@ export const getAllManga = async (req, res, next) => {
         ? await Manga.count({ category: catId })
         : await Manga.estimatedDocumentCount().lean();
     const mangaPages = Math.ceil(mangaCount / 20);
-
     catId =
       catId && catId != "all" ? { category: { $all: catId.split(",") } } : {};
     orderBy = req.query.orderBy;
@@ -90,43 +89,43 @@ export const getAllManga = async (req, res, next) => {
         manga = await Manga.find(catId)
           .skip(skip)
           .limit(PAGE_SIZE)
-          .select("views title image")
+          .select("views title image rate category")
+          .populate("category")
           .collation({ locale: "en", strength: 1 })
-          .sort({ title: 1 })
-          .lean();
+          .sort({ title: 1 });
         break;
       case "view":
         manga = await Manga.find(catId)
           .skip(skip)
           .limit(PAGE_SIZE)
-          .select("views title image")
-          .sort({ views: -1 })
-          .lean();
+          .select("views title image rate category")
+          .populate("category")
+          .sort({ views: -1 });
         break;
       case "new":
         manga = await Manga.find(catId)
           .skip(skip)
           .limit(PAGE_SIZE)
           .sort({ createdAt: -1 })
-          .select("views title image")
-          .lean();
+          .select("views title image rate category")
+          .populate("category");
         break;
       case "rate":
         manga = await Manga.find(catId)
           .skip(skip)
           .limit(PAGE_SIZE)
           .sort({ rate: -1 })
-          .select("views title image")
-          .lean();
+          .select("views title image rate category")
+          .populate("category");
         break;
       default:
         manga = await Manga.find(catId)
           .skip(skip)
           .limit(PAGE_SIZE)
-          .select("views title image")
+          .select("views title image rate category")
+          .populate("category", "category")
           .collation({ locale: "en", strength: 1 })
-          .sort({ title: 1 })
-          .lean();
+          .sort({ title: 1 });
         break;
     }
     return res.status(200).json({ mangaData: manga, mangaPages: mangaPages });
@@ -149,7 +148,6 @@ export const getManga = async (req, res, next) => {
       .populate("auther category", "category autherName")
       .select("-updatedAt -__v -createdAt -chapters.chapter");
 
-    manga.rate = await manga.rate;
     return res.status(200).json(manga);
   } catch (error) {
     next(errorHandler(error));
@@ -320,28 +318,35 @@ export const searchManga = async (req, res, next) => {
 export const postRating = async (req, res, next) => {
   try {
     const rating = req.body.rate; //number of star which was checked in client-side
-    const { userId }  = req.user;
+    const { userId } = req.user;
     const mangaId = req.params.mangaId;
     const possibleResult = ["1", "2", "3", "4", "5"];
     const rateCheck = possibleResult.includes(rating.toString()); //check if valid rate
-    const {rate: userRates} = await User.findById(userId).select("rate").lean();
+    const { rate: userRates } = await User.findById(userId)
+      .select("rate")
+      .lean();
     let prevUserRate;
     const notAcceptedRate =
       userRates.length > 0 &&
-      userRates.some((u) => u.mangaId == mangaId && u.rateNum.toString() == rating.toString());
+      userRates.some(
+        (u) => u.mangaId == mangaId && u.rateNum.toString() == rating.toString()
+      );
     if (notAcceptedRate) return res.status(200).json("done");
     const userRated =
-      userRates.length > 0 && userRates.some((el) => {if(el.mangaId == mangaId){
-        prevUserRate = el
-        return true
-      }});
+      userRates.length > 0 &&
+      userRates.some((el) => {
+        if (el.mangaId == mangaId) {
+          prevUserRate = el;
+          return true;
+        }
+      });
     if (!rateCheck) {
       const message = "please add valid rate";
       errorCode(message, 400);
     }
     const rate = `rate.${rating}`;
     const updateRate =
-    prevUserRate && prevUserRate.mangaId == mangaId
+      prevUserRate && prevUserRate.mangaId == mangaId
         ? await Manga.findByIdAndUpdate(
             { _id: mangaId },
             { $inc: { [rate]: 1, [`rate.${prevUserRate.rateNum}`]: -1 } },
