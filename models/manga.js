@@ -80,22 +80,20 @@ const mangaSchema = new Schema(
       get: rateWeightedAverage,
     },
   },
-  { timestamps: true }
+  { toJSON: { getters: true }, timestamps: true }
 );
 
-async function rateWeightedAverage(rate) {
+function rateWeightedAverage(rate) {
   try {
     //every star = it's number
     //1=>1, star 2 => 2 starts ..etc
     //total starts = sum of all stars
     const totalRates = rate[1] + rate[2] + rate[3] + rate[4] + rate[5];
     //if no rates return zero rates
-    if (totalRates == 0) return 0;
+    if (totalRates == 0) return Number(0).toFixed(1);
     const sumOfRates =
       1 * rate[1] + 2 * rate[2] + 3 * rate[3] + 4 * rate[4] + 5 * rate[5];
-
     const rateResult = Number((sumOfRates / totalRates).toFixed(1));
-
     return rateResult;
   } catch (error) {
     throw new Error(error);
