@@ -33,7 +33,7 @@ export const getCat = async (req, res, next) => {
 
 export const getAllCat = async (req, res, next) => {
   try {
-    let category = await Category.find().lean();
+    let category = await Category.find().select("category").lean();
     return res.status(200).json(category);
   } catch (error) {
     next(errorHandler(error));
