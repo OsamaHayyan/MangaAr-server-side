@@ -5,7 +5,7 @@ const { Types } = mongoose;
 const ObjectId = Types.ObjectId;
 export const isObjectId = async (obj) => {
   const arrObj = Array.isArray(obj) ? obj : [obj];
-  for await (el of arrObj) {
+  for await (let el of arrObj) {
     if (ObjectId.isValid(el)) {
       const isObject = String(new ObjectId(el)) === el ? true : false;
       if (!isObject) {
@@ -22,7 +22,7 @@ export const isObjectId = async (obj) => {
 const isObjectValid = async (obj) => {
   if (Array.isArray(obj)) {
     let result = [];
-    for await (o of obj) {
+    for await (let o of obj) {
       if (ObjectId.isValid(o)) {
         const isObject = String(new ObjectId(o)) === o ? true : false;
         if (!isObject) {
