@@ -1,3 +1,5 @@
 node_modules
+models/recommendation_model.pkl
+models/mangaList.json
 public/**/*
 .env
