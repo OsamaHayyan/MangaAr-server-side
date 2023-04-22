@@ -9,6 +9,7 @@ import { deleteDirAndFiles } from "../util/file.js";
 import { isObjectId } from "../util/is_objectId.js";
 import pagination from "../util/pagination.js";
 import webpConvertion from "../util/webpConvertion.js";
+import { PythonShell } from "python-shell";
 
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
@@ -62,7 +63,8 @@ export const createManga = async (req, res, next) => {
       { _id: category },
       { $push: { catManga: manga._id } }
     ).lean();
-    return res.status(201).json({ message: "success" });
+    res.sendStatus(201);
+    next();
   } catch (error) {
     next(errorHandler(error));
   }
@@ -137,7 +139,6 @@ export const getAllManga = async (req, res, next) => {
 export const getManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
-
     const manga = await Manga.findByIdAndUpdate(
       mangaId,
       {
@@ -147,8 +148,15 @@ export const getManga = async (req, res, next) => {
     )
       .populate("auther category", "category autherName")
       .select("-updatedAt -__v -createdAt -chapters.chapter");
-
-    return res.status(200).json(manga);
+    const recommendations = await PythonShell.run("util/recommendation.py", {
+      args: [mangaId],
+    });
+    const recommendationManga = await Manga.find({
+      _id: { $in: recommendations[0]?.split(" ") },
+    })
+      .select("title image")
+      .lean();
+    return res.status(200).json({ manga, recommendationManga });
   } catch (error) {
     next(errorHandler(error));
   }

@@ -14,9 +14,14 @@ import {
   manga_validation,
   error_validation,
 } from "../middleware/error_validation.js";
-import { is_admin, is_auth, is_superuser } from "../middleware/authorisation.js";
+import {
+  is_admin,
+  is_auth,
+  is_superuser,
+} from "../middleware/authorisation.js";
 import { param } from "express-validator";
 import uploadMiddleware from "../middleware/uploads.js";
+import createRecommendationModel from "../middleware/createRecommendationModel.js";
 
 const router = Router();
 const uploads = uploadMiddleware.fields([
@@ -63,7 +68,14 @@ router.get("/", getAllManga);
   message: "success"
 }
 */
-router.post("/add", is_admin, uploads, manga_validation, createManga);
+router.post(
+  "/add",
+  is_admin,
+  uploads,
+  manga_validation,
+  createManga,
+  createRecommendationModel
+);
 
 /*
 @GET: /mangas/manga/:mangaId
