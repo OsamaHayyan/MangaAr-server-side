@@ -314,7 +314,11 @@ export const searchManga = async (req, res, next) => {
     //const manga = await Manga.find({ title: { $regex: query, $options: "i" } })
 
     //for full word search
-    const manga = await Manga.find({ $text: { $search: query } })
+    const manga = await Manga.find(
+      { $text: { $search: `\"${query}\"` } },
+      { score: { $meta: "textScore" } }
+    )
+      .sort({ score: { $meta: "textScore" } })
       .select("title image")
       .lean();
     return res.status(200).json(manga);
