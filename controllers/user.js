@@ -45,7 +45,7 @@ export const login = async (req, res, next) => {
   try {
     const email = req.body.email;
     const user = await User.findOne({ email: email })
-      .select("email admin superuser")
+      .select("email admin username photo superuser favorite")
       .lean();
 
     const token = jwt.sign(
@@ -56,6 +56,7 @@ export const login = async (req, res, next) => {
         userId: user._id.toString(),
         admin: user.admin,
         superuser: user.superuser,
+        favorite: user.favorite,
       },
       process.env.SECRECT_KEY,
       { expiresIn: "3h" }

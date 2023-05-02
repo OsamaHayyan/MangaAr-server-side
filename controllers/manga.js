@@ -291,7 +291,6 @@ export const deleteManga = async (req, res, next) => {
 
     const mangaImage = path.join(manga.image);
     const mangaBanner = manga.banner ? path.join(manga.banner) : null;
-    console.log(mangaBanner);
     const dirChapters =
       manga.chapters.length != 0
         ? path.dirname(path.dirname(manga.chapters[0].chapter[0]))
