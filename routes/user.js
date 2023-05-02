@@ -17,6 +17,7 @@ import {
   getRecent,
   addFavorite,
   deleteFavorite,
+  getUser,
 } from "../controllers/user.js";
 import {
   error_validation,
@@ -32,6 +33,8 @@ import uploads from "../middleware/uploads.js";
 import User from "../models/user.js";
 
 const router = Router();
+
+router.get("/user", is_auth, getUser);
 
 router.post(
   "/signup",

@@ -444,7 +444,9 @@ export const getUser = async (req, res, next) => {
       const message = "no user found";
       errorCode(message, 400);
     }
-    const user = await User.findById(userId).lean();
+    const user = await User.findById(userId)
+      .select("username email recent favorite")
+      .lean();
     res.status(200).json(user);
   } catch (error) {
     next(errorHandler(error));
