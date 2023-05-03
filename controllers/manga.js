@@ -144,7 +144,7 @@ export const getManga = async (req, res, next) => {
       {
         $inc: { views: 1 },
       },
-      { new: true }
+      { new: true, timestamps: false }
     )
       .populate("auther category", "category autherName")
       .select("-updatedAt -__v -createdAt -chapters.chapter");
@@ -154,7 +154,7 @@ export const getManga = async (req, res, next) => {
     const recommendationManga = await Manga.find({
       _id: { $in: recommendations[0]?.split(" ") },
     })
-      .select("title image")
+      .select("title image views chapters")
       .lean();
     return res.status(200).json({ manga, recommendationManga });
   } catch (error) {
@@ -165,10 +165,10 @@ export const getManga = async (req, res, next) => {
 export const mostViewed = async (req, res, next) => {
   try {
     const manga = await Manga.find()
-      .select("views title image")
+      .populate("category", "category")
+      .select("views title image rate category chapters")
       .sort({ views: -1 })
-      .limit(5)
-      .lean();
+      .limit(6);
     res.status(200).json(manga);
   } catch (error) {
     next(errorHandler(error));
@@ -218,7 +218,8 @@ export const putManga = async (req, res, next) => {
         auther: autherUpdated,
         image: imageUpdated,
         banner: bannerUpdated,
-      }
+      },
+      { timestamps: false }
     ).lean();
 
     if (preAuth) {
@@ -361,12 +362,12 @@ export const postRating = async (req, res, next) => {
         ? await Manga.findByIdAndUpdate(
             { _id: mangaId },
             { $inc: { [rate]: 1, [`rate.${prevUserRate.rateNum}`]: -1 } },
-            { new: true }
+            { new: true, timestamps: false }
           ).select("rate")
         : await Manga.findByIdAndUpdate(
             { _id: mangaId },
             { $inc: { [rate]: 1 } },
-            { new: true }
+            { new: true, timestamps: false }
           ).select("rate");
 
     if (!updateRate) {
@@ -403,6 +404,49 @@ export const getRating = async (req, res, next) => {
     }
     const rateResult = await rating.rate;
     res.status(200).json({ rate: rateResult });
+  } catch (error) {
+    next(errorHandler(error));
+  }
+};
+
+export const getRecommendations = async (req, res, next) => {
+  try {
+    const mangaId = await Manga.find()
+      .sort({ views: -1 })
+      .limit(1)
+      .lean()
+      .select("_id");
+    const recommendations = await PythonShell.run("util/recommendation.py", {
+      args: [mangaId[0]._id],
+    });
+    const recommendationManga = await Manga.find({
+      _id: { $in: recommendations[0]?.split(" ") },
+    })
+      .select("title image views chapters")
+      .lean();
+    return res.status(200).json(recommendationManga);
+  } catch (error) {
+    next(errorHandler(error));
+  }
+};
+
+export const getTrendy = async (req, res, next) => {
+  try {
+    const trendy = [];
+    const categories = [
+      { cateogry: "Action", _id: "63f3a61b0e7402c84cebde7a" },
+      { cateogry: "Romance", _id: "63f3a61b0e7402c84cebdeae" },
+      { cateogry: "Drama", _id: "63f3a61b0e7402c84cebde86" },
+    ];
+    for (let i = 0; i < categories.length; i++) {
+      const mangaData = await Manga.find({ category: categories[i]._id })
+        .limit(5)
+        .select("views title image rate chapters");
+
+      trendy.push({ category: categories[i].cateogry, manga: mangaData });
+    }
+
+    res.status(200).json(trendy);
   } catch (error) {
     next(errorHandler(error));
   }

@@ -9,6 +9,8 @@ import {
   mostViewed,
   postRating,
   getRating,
+  getRecommendations,
+  getTrendy,
 } from "../controllers/manga.js";
 import {
   manga_validation,
@@ -212,5 +214,9 @@ router.get(
   error_validation,
   getRating
 );
+
+router.get("/recommendation/", getRecommendations);
+
+router.get("/trendy", getTrendy);
 
 export default router;
