@@ -1,6 +1,9 @@
 node_modules
 models/recommendation_model.pkl
 models/mangaList.json
-public/**/*
-!public/profile_photo/default
+public/chapters
+public/manga_images
+public/news
+public/profile_photo/*
+!public/profile_photo/default/
 .env
