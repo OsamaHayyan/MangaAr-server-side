@@ -148,14 +148,22 @@ export const getManga = async (req, res, next) => {
     )
       .populate("auther category", "category autherName")
       .select("-updatedAt -__v -createdAt -chapters.chapter");
-    const recommendations = await PythonShell.run("util/recommendation.py", {
-      args: [mangaId],
-    });
-    const recommendationManga = await Manga.find({
-      _id: { $in: recommendations[0]?.split(" ") },
-    })
-      .select("title image views chapters")
-      .lean();
+
+    let recommendationManga = null;
+    try {
+      const recommendations = await PythonShell.run("util/recommendation.py", {
+        args: [mangaId],
+      });
+
+      recommendationManga = await Manga.find({
+        _id: { $in: recommendations[0]?.split(" ") },
+      })
+        .select("title image views chapters")
+        .lean();
+    } catch (error) {
+      return res.status(200).json({ manga, recommendationManga: null });
+    }
+
     return res.status(200).json({ manga, recommendationManga });
   } catch (error) {
     next(errorHandler(error));
