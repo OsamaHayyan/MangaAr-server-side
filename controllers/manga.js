@@ -150,7 +150,9 @@ export const getManga = async (req, res, next) => {
       .populate("auther category", "category autherName")
       .select("-updatedAt -__v -createdAt -chapters.chapter");
 
-    const fileExist = existsSync("../models/recommendation_model.pkl");
+    const fileExist = existsSync("models/recommendation_model.txt");
+    console.log(fileExist);
+
     if (fileExist) {
       const recommendations = await PythonShell.run("util/recommendation.py", {
         args: [mangaId],
