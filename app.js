@@ -73,7 +73,7 @@ app.use(async (error, req, res, next) => {
 });
 
 const port = process.env.PORT || 8080;
-const mongo = process.env.MONGODB_LOCAL;
+const mongo = process.env.DATABASE_URL;
 
 (async () => {
   let maxTries = 2;
