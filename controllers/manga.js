@@ -10,7 +10,8 @@ import { isObjectId } from "../util/is_objectId.js";
 import pagination from "../util/pagination.js";
 import webpConvertion from "../util/webpConvertion.js";
 import { PythonShell } from "python-shell";
-
+import fs, { constants } from "fs/promises";
+import { existsSync } from "fs";
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
 export const createManga = async (req, res, next) => {
@@ -149,22 +150,26 @@ export const getManga = async (req, res, next) => {
       .populate("auther category", "category autherName")
       .select("-updatedAt -__v -createdAt -chapters.chapter");
 
-    let recommendationManga = null;
-    try {
+    const fileExist = existsSync("../models/recommendation_model.pkl");
+    if (fileExist) {
       const recommendations = await PythonShell.run("util/recommendation.py", {
         args: [mangaId],
       });
 
-      recommendationManga = await Manga.find({
+      const recommendationManga = await Manga.find({
         _id: { $in: recommendations[0]?.split(" ") },
       })
         .select("title image views chapters")
         .lean();
-    } catch (error) {
-      return res.status(200).json({ manga, recommendationManga: null });
+      return res.status(200).json({ manga, recommendationManga });
+    } else {
+      const otherRecommendations = await Manga.find({
+        category: manga.category[0],
+      }).limit(10);
+      return res
+        .status(200)
+        .json({ manga, recommendationManga: otherRecommendations });
     }
-
-    return res.status(200).json({ manga, recommendationManga });
   } catch (error) {
     next(errorHandler(error));
   }
