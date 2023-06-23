@@ -67,6 +67,7 @@ export const login = async (req, res, next) => {
         expires: new Date(Date.now() + 3 * (60 * 60 * 1000)),
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
       })
       .status(201)
       .json({
