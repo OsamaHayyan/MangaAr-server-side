@@ -431,15 +431,23 @@ export const getRecommendations = async (req, res, next) => {
       .limit(1)
       .lean()
       .select("_id");
-    const recommendations = await PythonShell.run("util/recommendation.py", {
-      args: [mangaId[0]._id],
-    });
-    const recommendationManga = await Manga.find({
-      _id: { $in: recommendations[0]?.split(" ") },
-    })
-      .select("title image views chapters")
-      .lean();
-    return res.status(200).json(recommendationManga);
+    if (existsSync("models/recommendation_model.pkl")) {
+      const recommendations = await PythonShell.run("util/recommendation.py", {
+        args: [mangaId[0]._id],
+      });
+      const recommendationManga = await Manga.find({
+        _id: { $in: recommendations[0]?.split(" ") },
+      })
+        .select("title image views chapters")
+        .lean();
+      return res.status(200).json(recommendationManga);
+    } else {
+      const recommendationManga = await Manga.find()
+        .sort({ views: -1 })
+        .skip(10)
+        .limit(10);
+      return res.status(200).json(recommendationManga);
+    }
   } catch (error) {
     next(errorHandler(error));
   }
