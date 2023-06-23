@@ -20,7 +20,7 @@ import __dirname from "./util/__dirname.js";
 dotenv.config();
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: "https://mymanga.vercel.app",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
   optionsSuccessStatus: 204,
