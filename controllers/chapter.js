@@ -154,10 +154,18 @@ export const getChapter = async (req, res, next) => {
       errorCode(message, 400);
     }
 
+    const chapter = manga.chapters.find(
+      (ch) => ch._id.toString() === chapterId
+    );
+    if (!chapter) {
+      const message = "not found";
+      errorCode(message, 400);
+    }
+
     if (userId && req.user.superuser === false) {
       const chapterRecentExist = await User.exists({
         _id: userId,
-        "recent.chapter": manga.chapters[0]._id,
+        "recent.chapter": chapterId,
       });
 
       if (!chapterRecentExist) {
@@ -167,8 +175,8 @@ export const getChapter = async (req, res, next) => {
             $push: {
               recent: {
                 manga: mangaId,
-                chapter: manga.chapters[0]._id,
-                chapterNum: manga.chapters[0].chapterNum,
+                chapter: chapterId,
+                chapterNum: chapter.chapterNum,
                 title: manga.title,
                 image: manga.image,
               },
@@ -185,7 +193,7 @@ export const getChapter = async (req, res, next) => {
         }
       }
     }
-    return res.status(200).json(manga);
+    return res.status(200).json({ ...manga, chapters: [chapter] });
   } catch (error) {
     next(errorHandler(error));
   }
