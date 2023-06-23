@@ -326,16 +326,18 @@ export const searchManga = async (req, res, next) => {
       errorCode("Expected string, found null", 500);
     }
     // for partial word search
-    //const manga = await Manga.find({ title: { $regex: query, $options: "i" } })
-
-    //for full word search
-    const manga = await Manga.find(
-      { $text: { $search: `\"${query}\"` } },
-      { score: { $meta: "textScore" } }
-    )
-      .sort({ score: { $meta: "textScore" } })
+    const manga = await Manga.find({ title: { $regex: query, $options: "i" } })
       .select("title image")
       .lean();
+
+    //for full word search
+    // const manga = await Manga.find(
+    //   { $text: { $search: `\"${query}\"` } },
+    //   { score: { $meta: "textScore" } }
+    // )
+    //   .sort({ score: { $meta: "textScore" } })
+    //   .select("title image")
+    //   .lean();
     return res.status(200).json(manga);
   } catch (error) {
     next(errorHandler(error));
