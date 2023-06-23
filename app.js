@@ -29,7 +29,7 @@ const corsOptions = {
 
 const app = express();
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" } }));
+app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(compression());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
