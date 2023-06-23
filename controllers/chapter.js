@@ -146,7 +146,7 @@ export const getChapter = async (req, res, next) => {
       { _id: mangaId, "chapters._id": chapterId },
       { $inc: { "chapters.$.views": 1, views: 1 } }
     )
-      .select("chapters.$ image title")
+      .select("chapters image title")
       .lean();
 
     if (!manga) {
