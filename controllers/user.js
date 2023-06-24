@@ -82,7 +82,12 @@ export const login = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   try {
     return res
-      .clearCookie("access_token")
+      .clearCookie("access_token", {
+        domain: "egymanga.me",
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production",
+      })
       .status(200)
       .json({ message: "Successfully logged out 😏 🍀" });
   } catch (error) {
