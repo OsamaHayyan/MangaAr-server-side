@@ -64,7 +64,7 @@ export const login = async (req, res, next) => {
 
     return res
       .cookie("access_token", token, {
-        domain: "https://mymanga.vercel.app",
+        domain: "mymanga.vercel.app",
         path: "/user/login",
         expires: new Date(Date.now() + 3 * (60 * 60 * 1000)),
         httpOnly: true,
