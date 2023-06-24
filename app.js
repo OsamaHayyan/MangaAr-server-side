@@ -20,7 +20,7 @@ import __dirname from "./util/__dirname.js";
 dotenv.config();
 
 const corsOptions = {
-  origin: "https://www.egymanga.com",
+  origin: "https://egymanga.me",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false,
   optionsSuccessStatus: 204,

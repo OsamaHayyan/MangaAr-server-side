@@ -64,7 +64,7 @@ export const login = async (req, res, next) => {
 
     return res
       .cookie("access_token", token, {
-        domain: "www.egymanga.me",
+        domain: "egymanga.me",
         expires: new Date(Date.now() + 6 * (60 * 60 * 1000)),
         httpOnly: true,
         sameSite: "strict",
