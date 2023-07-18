@@ -7,3 +7,10 @@ public/news
 public/profile_photo/*
 !public/profile_photo/default/
 .env
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

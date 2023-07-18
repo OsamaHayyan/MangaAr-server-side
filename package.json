@@ -28,5 +28,6 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
-  }
+  },
+  "packageManager": "yarn@3.6.1"
 }
