@@ -12,36 +12,38 @@ const createRecommendationModel = async (req, res, next) => {
       .populate("auther category", "category autherName -_id");
     //clear data for analysis
     let newData = [];
-    for (let index = 0; index < allManga.length; index++) {
-      const element = allManga[index];
-      const clearedTitle = element.title
-        .trim()
-        .toLowerCase()
-        .replaceAll(" ", "");
-      const clearedCategory = element.category
-        .map((cat) => cat.category.trim().toLowerCase().replaceAll(" ", ""))
-        .join(" ");
-      const clearedAuthers =
-        element.auther
-          ?.map((auth) =>
-            auth.autherName.trim().toLowerCase().replaceAll(" ", "")
-          )
-          .join(" ") || "";
-      const clearedData = `${clearedTitle} ${clearedCategory} ${clearedAuthers}`;
+    if (allManga.length >= 39636) {
+      for (let index = 0; index < allManga.length; index++) {
+        const element = allManga[index];
+        const clearedTitle = element.title
+          .trim()
+          .toLowerCase()
+          .replaceAll(" ", "");
+        const clearedCategory = element.category
+          .map((cat) => cat.category.trim().toLowerCase().replaceAll(" ", ""))
+          .join(" ");
+        const clearedAuthers =
+          element.auther
+            ?.map((auth) =>
+              auth.autherName.trim().toLowerCase().replaceAll(" ", "")
+            )
+            .join(" ") || "";
+        const clearedData = `${clearedTitle} ${clearedCategory} ${clearedAuthers}`;
 
-      newData.push({
-        _id: element._id,
-        soup: clearedData,
+        newData.push({
+          _id: element._id,
+          soup: clearedData,
+        });
+      }
+      const mangaJson = JSON.stringify(newData);
+      await writeFile(
+        path.join(__dirname(import.meta.url), "..", "models", "mangaList.json"),
+        mangaJson
+      );
+      await PythonShell.run("util/createModel.py", {
+        mode: "text",
       });
     }
-    const mangaJson = JSON.stringify(newData);
-    await writeFile(
-      path.join(__dirname(import.meta.url), "..", "models", "mangaList.json"),
-      mangaJson
-    );
-    await PythonShell.run("util/createModel.py", {
-      mode: "text",
-    });
     return res.sendStatus(200);
   } catch (error) {
     next(errorHandler(error));
