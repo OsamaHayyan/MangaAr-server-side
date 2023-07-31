@@ -12,7 +12,7 @@ const createRecommendationModel = async (req, res, next) => {
       .populate("auther category", "category autherName -_id");
     //clear data for analysis
     let newData = [];
-    for (let index = 0; index < 10000; index++) {
+    for (let index = 0; index < allManga.length; index++) {
       const element = allManga[index];
       const clearedTitle = element.title
         .trim()
