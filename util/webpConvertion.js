@@ -10,12 +10,17 @@ const webpConvertion = async (basePath, image, banner) => {
       let container = [image, banner];
       let resultPaths = [];
       for await (const img of container) {
-        let path = await imageConvertion(img, basePath);
-        resultPaths.push(path);
+        let filePath =
+          path.extname(img) == ".webp"
+            ? path.join(img)
+            : await imageConvertion(img, basePath);
+        resultPaths.push(filePath);
       }
       return resultPaths;
     } else if (image && !banner) {
-      return await imageConvertion(image, basePath);
+      return path.extname(image) == ".webp"
+        ? path.join(image)
+        : await imageConvertion(image, basePath);
     }
   } catch (error) {
     errorCode(error, 500);
