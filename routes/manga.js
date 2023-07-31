@@ -146,7 +146,13 @@ router.get("/most-viewed", mostViewed);
 },
 @Response: { message: "success" }
 */
-router.put("/manga/:mangaId", is_admin, uploads, manga_validation, putManga);
+router.put(
+  "/manga/:mangaId",
+  is_admin,
+  uploads,
+  // manga_validation,
+  putManga
+);
 
 /*
 @DELETE: /mangas/delete/:mangaId

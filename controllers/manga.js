@@ -192,12 +192,12 @@ export const mostViewed = async (req, res, next) => {
 export const putManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
-    const title = req.body.title;
-    const story = req.body.story;
-    const status = req.body.status;
-    const date = req.body.date;
-    const category = req.body.category;
-    const autherUpdated = req.body.auther || null;
+    // const title = req.body.title;
+    // const story = req.body.story;
+    // const status = req.body.status;
+    // const date = req.body.date;
+    // const category = req.body.category;
+    // const autherUpdated = req.body.auther || null;
     const { image, banner } = req.files;
     let imageUpdated = image
       ? await webpConvertion("manga_images", image[0].path)
@@ -224,51 +224,51 @@ export const putManga = async (req, res, next) => {
     await Manga.updateOne(
       { _id: mangaId },
       {
-        title: title,
-        story: story,
-        status: status,
-        date: date.getFullYear(),
-        category: category,
-        auther: autherUpdated,
+        // title: title,
+        // story: story,
+        // status: status,
+        // date: date.getFullYear(),
+        // category: category,
+        // auther: autherUpdated,
         image: imageUpdated,
-        banner: bannerUpdated,
+        // banner: bannerUpdated,
       },
       { timestamps: false }
     ).lean();
 
-    if (preAuth) {
-      if (autherUpdated != preAuth) {
-        await Auther.updateMany(
-          { _id: preAuth },
-          {
-            $pull: { autherManga: mangaId },
-          }
-        ).lean();
-        await Auther.updateOne(
-          { _id: autherUpdated },
-          {
-            $push: { autherManga: mangaId },
-          }
-        ).lean();
-      }
-    } else {
-      await Auther.updateOne(
-        { _id: autherUpdated },
-        {
-          $push: { autherManga: mangaId },
-        }
-      ).lean();
-    }
+    // if (preAuth) {
+    //   if (autherUpdated != preAuth) {
+    //     await Auther.updateMany(
+    //       { _id: preAuth },
+    //       {
+    //         $pull: { autherManga: mangaId },
+    //       }
+    //     ).lean();
+    //     await Auther.updateOne(
+    //       { _id: autherUpdated },
+    //       {
+    //         $push: { autherManga: mangaId },
+    //       }
+    //     ).lean();
+    //   }
+    // } else {
+    //   await Auther.updateOne(
+    //     { _id: autherUpdated },
+    //     {
+    //       $push: { autherManga: mangaId },
+    //     }
+    //   ).lean();
+    // }
 
-    await Category.updateMany(
-      { _id: preCat },
-      { $pull: { catManga: mangaId } }
-    );
+    // await Category.updateMany(
+    //   { _id: preCat },
+    //   { $pull: { catManga: mangaId } }
+    // );
 
-    await Category.updateMany(
-      { _id: category },
-      { $push: { catManga: mangaId } }
-    );
+    // await Category.updateMany(
+    //   { _id: category },
+    //   { $push: { catManga: mangaId } }
+    // );
 
     return res.status(200).json({ message: "success" });
   } catch (error) {
