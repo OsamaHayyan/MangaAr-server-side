@@ -10,7 +10,6 @@ import { isObjectId } from "../util/is_objectId.js";
 import pagination from "../util/pagination.js";
 import webpConvertion from "../util/webpConvertion.js";
 import { PythonShell } from "python-shell";
-import fs, { constants } from "fs/promises";
 import { existsSync } from "fs";
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
