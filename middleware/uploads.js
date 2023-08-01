@@ -93,8 +93,8 @@ const fileStorage = multer.diskStorage({
         case "image": {
           //Order in request here is important, text first then image
 
-          // await MangaValidation(req);
-          // error_validation_multi(req);
+          await MangaValidation(req);
+          error_validation_multi(req);
 
           const dir = path.join(
             __dirname(import.meta.url),
