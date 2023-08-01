@@ -17,6 +17,10 @@ export const deleteDirAndFiles = async (dirOrFile) => {
       await rm(dirOrFile, { recursive: true });
     }
   } catch (error) {
-    return errorCode(error, 500);
+    if (error.code === "ENOENT") {
+      console.log("File not found!");
+    } else {
+      return errorCode(error, 500);
+    }
   }
 };

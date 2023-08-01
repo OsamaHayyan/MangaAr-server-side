@@ -214,12 +214,12 @@ export const putManga = async (req, res, next) => {
     const preCat = manga.category;
 
     //remove old image and banner
-    // if (imageUpdated) {
-    //   await deleteDirAndFiles(manga.image);
-    // }
-    // if (bannerUpdated) {
-    //   await deleteDirAndFiles(manga.banner);
-    // }
+    if (imageUpdated) {
+      await deleteDirAndFiles(manga.image);
+    }
+    if (bannerUpdated) {
+      await deleteDirAndFiles(manga.banner);
+    }
 
     await Manga.updateOne(
       { _id: mangaId },
