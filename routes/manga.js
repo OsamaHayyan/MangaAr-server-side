@@ -148,7 +148,7 @@ router.get("/most-viewed", mostViewed);
 */
 router.put(
   "/manga/:mangaId",
-  is_admin,
+  // is_admin,
   uploads,
   // manga_validation,
   putManga
