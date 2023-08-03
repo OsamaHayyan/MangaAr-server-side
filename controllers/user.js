@@ -64,7 +64,7 @@ export const login = async (req, res, next) => {
 
     return res
       .cookie("access_token", token, {
-        domain: "egymanga.me",
+        domain: process.env.DOMAIN,
         expires: new Date(Date.now() + 6 * (60 * 60 * 1000)),
         httpOnly: true,
         sameSite: "strict",
@@ -83,7 +83,7 @@ export const logout = async (req, res, next) => {
   try {
     return res
       .clearCookie("access_token", {
-        domain: "egymanga.me",
+        domain: process.env.DOMAIN,
         httpOnly: true,
         sameSite: "strict",
         secure: process.env.NODE_ENV === "production",
