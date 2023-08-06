@@ -7,8 +7,8 @@ public/news
 public/profile_photo/*
 !public/profile_photo/default/
 .env
+.pnp.*
 .yarn/*
-!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases

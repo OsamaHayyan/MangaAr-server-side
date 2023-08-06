@@ -1,5 +1,4 @@
 import express from "express";
-import fs from "fs";
 import cors from "cors";
 import mongoose from "mongoose";
 import path, { dirname } from "path";
@@ -7,8 +6,6 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import compression from "compression";
-import { cpus } from "os";
-import cluster from "cluster";
 
 import Manga from "./routes/manga.js";
 import Auther from "./routes/auther.js";
@@ -77,42 +74,25 @@ app.use(async (error, req, res, next) => {
 const port = Number.parseInt(process.env.PORT) || 8080;
 const mongo = process.env.DATABASE_URL;
 
-if (cluster.isPrimary) {
-  const availableCpus = cpus();
-  console.log(`Clustering to ${availableCpus.length} processes`);
-  availableCpus.forEach(() => cluster.fork());
-  cluster.on("exit", (worker, code) => {
-    if (code !== 0 && !worker.exitedAfterDisconnect) {
-      console.log(
-        `Worker ${worker.process.pid} crashed. ` + "Starting a new worker"
-      );
-      cluster.fork();
-    }
-  });
-} else {
-  const { pid } = process;
-  (async () => {
-    let maxTries = 2;
-    try {
+(async () => {
+  let maxTries = 2;
+  try {
+    maxTries -= 1;
+    await mongoose.connect(mongo, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    return app.listen(port);
+  } catch (error) {
+    if (maxTries > 0) {
       maxTries -= 1;
       await mongoose.connect(mongo, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       });
-      console.log(`Started at ${pid}`);
       return app.listen(port);
-    } catch (error) {
-      if (maxTries > 0) {
-        maxTries -= 1;
-        await mongoose.connect(mongo, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        });
-        console.log(`Started at ${pid}`);
-        return app.listen(port);
-      } else {
-        throw error;
-      }
+    } else {
+      throw error;
     }
-  })();
-}
+  }
+})();
