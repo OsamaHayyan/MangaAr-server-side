@@ -44,7 +44,7 @@ const createRecommendationModel = async (req, res, next) => {
         mode: "text",
       });
     }
-    return res.sendStatus(200);
+    return;
   } catch (error) {
     next(errorHandler(error));
   }
