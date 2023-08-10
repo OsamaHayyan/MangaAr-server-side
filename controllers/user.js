@@ -9,6 +9,7 @@ import { errorCode, errorHandler } from "../error/errorsHandler.js";
 import { deleteDirAndFiles } from "../util/file.js";
 import { isObjectId } from "../util/is_objectId.js";
 import webpConvertion from "../util/webpConvertion.js";
+import uploadedImageUrl from "../util/uploadImage.js";
 dotenv.config();
 
 export const signup = async (req, res, next) => {
@@ -17,8 +18,8 @@ export const signup = async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     const confirmPw = req.body.confirm;
-    const photoPath = req.file
-      ? await webpConvertion("profile_photo", req.file.path)
+    const photoUrl = req.file
+      ? await uploadedImageUrl(req.file.path)
       : "public/profile_photo/default/placeholder-avatar.png";
 
     if (password != confirmPw) {
@@ -29,7 +30,7 @@ export const signup = async (req, res, next) => {
     const user = await User.create({
       email: email,
       username: username,
-      photo: photoPath,
+      photo: photoUrl,
       password: hashedPw,
     });
     res.status(201).json({

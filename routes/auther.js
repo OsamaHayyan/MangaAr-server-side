@@ -62,7 +62,6 @@ router.put(
             _id: req.params.autherId,
             autherName: { $regex: new RegExp("^" + name + "$", "i") },
           });
-          console.log(autherNameIsSame);
           if (autherExistance && !autherNameIsSame) {
             const message = "auther already exist";
             throw new Error(message);

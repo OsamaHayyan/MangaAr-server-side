@@ -8,9 +8,9 @@ import Category from "../models/category.js";
 import { deleteDirAndFiles } from "../util/file.js";
 import { isObjectId } from "../util/is_objectId.js";
 import pagination from "../util/pagination.js";
-import webpConvertion from "../util/webpConvertion.js";
 import { PythonShell } from "python-shell";
 import { existsSync } from "fs";
+import uploadedImageUrl from "../util/uploadImage.js";
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
 export const createManga = async (req, res, next) => {
@@ -25,19 +25,14 @@ export const createManga = async (req, res, next) => {
       errorCode(message, statusCode);
     }
 
-    //Returns [image, banner] or image
-    const mangaWebpPath = banner
-      ? await webpConvertion("manga_images", image[0].path, banner[0].path)
-      : await webpConvertion("manga_images", image[0].path);
-
     const title = req.body.title;
     const story = req.body.story;
     const status = req.body.status;
     const date = req.body.date;
     const category = req.body.category;
     const auther = req.body.auther || null;
-    const imageUrl = banner ? mangaWebpPath[0] : mangaWebpPath;
-    const bannerUrl = banner ? mangaWebpPath[1] : null;
+    const imageUrl = image ? await uploadedImageUrl(image[0].path) : null;
+    const bannerUrl = banner ? await uploadedImageUrl(banner[0].path) : null;
 
     const manga = await Manga.create({
       title: title,
@@ -150,7 +145,6 @@ export const getManga = async (req, res, next) => {
       .select("-updatedAt -__v -createdAt -chapters.chapter");
 
     const fileExist = existsSync("models/recommendation_model.txt");
-    console.log(fileExist);
 
     if (fileExist) {
       const recommendations = await PythonShell.run("util/recommendation.py", {
@@ -199,12 +193,8 @@ export const putManga = async (req, res, next) => {
     const category = req.body.category;
     const autherUpdated = req.body.auther || null;
     const { image, banner } = req.files;
-    let imageUpdated = image
-      ? await webpConvertion("manga_images", image[0].path)
-      : undefined;
-    let bannerUpdated = banner
-      ? await webpConvertion("manga_images", banner[0].path)
-      : undefined;
+    const imageUrl = image ? await uploadedImageUrl(image[0].path) : null;
+    const bannerUrl = banner ? await uploadedImageUrl(banner[0].path) : null;
 
     const manga = await Manga.findById(mangaId)
       .select("title category auther image banner")
@@ -213,25 +203,17 @@ export const putManga = async (req, res, next) => {
     const preAuth = manga.auther;
     const preCat = manga.category;
 
-    //remove old image and banner
-    if (imageUpdated) {
-      await deleteDirAndFiles(manga.image);
-    }
-    if (bannerUpdated) {
-      await deleteDirAndFiles(manga.banner);
-    }
-
     await Manga.updateOne(
       { _id: mangaId },
       {
-        title: title,
-        story: story,
-        status: status,
+        title,
+        story,
+        status,
         date: date.getFullYear(),
         category: category,
         auther: autherUpdated,
-        image: imageUpdated,
-        banner: bannerUpdated,
+        image: imageUrl,
+        banner: bannerUrl,
       },
       { timestamps: false }
     ).lean();
