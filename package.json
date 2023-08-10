@@ -29,7 +29,7 @@
     "validator": "^13.6.0"
   },
   "scripts": {
-    "start": "pm2 start app.js -i max",
+    "start": "pm2-runtime start app.js -i max",
     "dev": "nodemon app.js"
   },
   "packageManager": "yarn@3.6.1"
