@@ -1,40 +1,73 @@
 import fs from "fs";
-import path from "path";
 import __dirname from "./__dirname.js";
-import axios from "axios";
-import FormData from "form-data";
 import { deleteDirAndFiles } from "./file.js";
+import ImageKit from "imagekit";
+import dotenv from "dotenv";
+import { errorCode } from "../error/errorsHandler.js";
 
-const uploadedImageUrl = async (image) => {
+dotenv.config();
+
+const imagekit = new ImageKit({
+  publicKey: "public_vIfkSNqPfFacM12TOb8bVoGp0Ss=",
+  privateKey: process.env.ImageKit_PrivateKey,
+  urlEndpoint: "https://ik.imagekit.io/ziosx2001",
+});
+
+export const uploadImage = async (imagePath, imageName, imageFolder) => {
   try {
-    const rawImage = new FormData();
-    rawImage.append(
-      "source",
-      fs.createReadStream(path.join(__dirname(import.meta.url), "..", image))
-    );
+    if (!imagePath) throw new Error("Image Path or image id not specified");
+    const imageFile = await fs.promises.readFile(imagePath, {
+      encoding: "base64",
+    });
+    const imageUrl = await imagekit.upload({
+      file: imageFile,
+      fileName: imageName,
+      folder: imageFolder,
+      responseFields: "url",
+    });
 
-    const uploadedImage = await axios.post(
-      "https://freeimage.host/api/1/upload?key=6d207e02198a847aa98d0a2a901485a5",
-      rawImage
-    );
-
-    await deleteDirAndFiles(image);
-    return uploadedImage.data.image.url;
+    await deleteDirAndFiles(imagePath);
+    return imageUrl;
   } catch (error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log("Error", error.message);
-    }
+    console.log(error);
+    errorCode("Internal Server", 500);
   }
 };
 
-export default uploadedImageUrl;
+export const putImage = async (
+  imagePath,
+  imageName,
+  imageFolder,
+  oldImageId
+) => {
+  try {
+    if (!imagePath || !oldImageId)
+      throw new Error("Image Path or image id not specified");
+    const imageFile = await fs.promises.readFile(imagePath, {
+      encoding: "base64",
+    });
+    const imageUrl = await imagekit.upload({
+      file: imageFile,
+      fileName: imageName,
+      folder: imageFolder,
+      responseFields: "url",
+    });
+    await imagekit.deleteFile(oldImageId);
+
+    await deleteDirAndFiles(imagePath);
+    return imageUrl;
+  } catch (error) {
+    console.log(error);
+    errorCode("Internal Server", 500);
+  }
+};
+
+export const deleteImage = async (imageId) => {
+  try {
+    if (!imageId) throw new Error("please provid the image id");
+    await imagekit.deleteFile(imageId);
+  } catch (error) {
+    console.log(error);
+    errorCode("Internal Server", 500);
+  }
+};
