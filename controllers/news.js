@@ -3,17 +3,23 @@ import { errorCode, errorHandler } from "../error/errorsHandler.js";
 import { deleteDirAndFiles } from "../util/file.js";
 import pagination from "../util/pagination.js";
 import webpConvertion from "../util/webpConvertion.js";
+import { deleteImage, putImage, uploadImage } from "../util/uploadImage.js";
 
 export const postNews = async (req, res, next) => {
   try {
     const { title, topic } = req.body;
-    const poster = req.file?.path;
-    if (!poster) {
+    const poster = req.file;
+    if (!poster.path) {
       const message = "Please upload poster";
       errorCode(message, 400);
     }
-    const webpPoster = await webpConvertion("news", poster);
-    await News.create({ topic: topic, poster: webpPoster, title: title });
+    const webpPoster = await uploadImage(poster.path, poster.filename, "news");
+    await News.create({
+      topic: topic,
+      poster: webpPoster.url,
+      poster_id: webpPoster.fileId,
+      title: title,
+    });
     res.status(200).json("success");
   } catch (error) {
     next(errorHandler(error));
@@ -55,19 +61,20 @@ export const getNews = async (req, res, next) => {
 export const putNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
+    const news = await News.findOne({ _id: newsId })
+      .select("poster_id -_id")
+      .lean();
     const { title, topic } = req.body;
     const poster = req.file
-      ? await webpConvertion("news", req.file.path)
+      ? await putImage(req.file.path, req.file.filename, "news", news.poster_id)
       : undefined;
-    const news = await News.findByIdAndUpdate(newsId, {
+
+    await News.findByIdAndUpdate(newsId, {
       title: title,
       topic: topic,
-      poster: poster,
+      poster: poster.url,
+      poster_id: poster.fileId,
     }).lean();
-
-    if (req.file) {
-      await deleteDirAndFiles(news.poster);
-    }
 
     res.status(200).json(news);
   } catch (error) {
@@ -79,7 +86,7 @@ export const deleteNews = async (req, res, next) => {
   try {
     const newsId = req.params.newsId;
     const news = await News.findByIdAndDelete(newsId).lean();
-    await deleteDirAndFiles(news.poster);
+    await deleteImage(news.poster_id);
     res.status(200).json("Deleted");
   } catch (error) {
     next(errorHandler(error));

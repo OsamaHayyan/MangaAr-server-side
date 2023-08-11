@@ -10,16 +10,13 @@ import { isObjectId } from "../util/is_objectId.js";
 import pagination from "../util/pagination.js";
 import { PythonShell } from "python-shell";
 import { existsSync } from "fs";
-import uploadedImageUrl from "../util/uploadImage.js";
+import { uploadImage, deleteImage, putImage } from "../util/uploadImage.js";
 // Order of sending text inputs and Images is too important ==>  Text input first then Images
 
 export const createManga = async (req, res, next) => {
   try {
     const { image, banner } = req.files;
     if (!image) {
-      if (banner) {
-        await deleteDirAndFiles(banner[0].path);
-      }
       const message = "please add image";
       const statusCode = 400;
       errorCode(message, statusCode);
@@ -31,8 +28,20 @@ export const createManga = async (req, res, next) => {
     const date = req.body.date;
     const category = req.body.category;
     const auther = req.body.auther || null;
-    const imageUrl = image ? await uploadedImageUrl(image[0].path) : null;
-    const bannerUrl = banner ? await uploadedImageUrl(banner[0].path) : null;
+    const imageUrl = image
+      ? await uploadImage(
+          image[0].path,
+          path.parse(image[0].filename).name,
+          "manga_images"
+        )
+      : null;
+    const bannerUrl = banner
+      ? await uploadImage(
+          banner[0].path,
+          path.parse(banner[0].fileName).name,
+          "manga_images"
+        )
+      : null;
 
     const manga = await Manga.create({
       title: title,
@@ -41,8 +50,10 @@ export const createManga = async (req, res, next) => {
       status: status,
       date: date.getFullYear(),
       auther: auther,
-      image: imageUrl,
-      banner: bannerUrl,
+      image: imageUrl.url,
+      banner: bannerUrl.url ? bannerUrl.url : null,
+      image_id: imageUrl.fileId,
+      banner_id: bannerUrl.fileId ? bannerUrl.fileId : null,
     });
 
     if (auther != null) {
@@ -186,6 +197,12 @@ export const mostViewed = async (req, res, next) => {
 export const putManga = async (req, res, next) => {
   try {
     const mangaId = req.params.mangaId;
+    const exist = await Manga.exists({ _id: mangaId });
+    if (!exist) return res.status(200).json({ message: "manga not found" });
+    const manga = await Manga.findById(mangaId)
+      .select("title category auther image banner image_id banner_id")
+      .lean();
+
     const title = req.body.title;
     const story = req.body.story;
     const status = req.body.status;
@@ -193,12 +210,22 @@ export const putManga = async (req, res, next) => {
     const category = req.body.category;
     const autherUpdated = req.body.auther || null;
     const { image, banner } = req.files;
-    const imageUrl = image ? await uploadedImageUrl(image[0].path) : null;
-    const bannerUrl = banner ? await uploadedImageUrl(banner[0].path) : null;
-
-    const manga = await Manga.findById(mangaId)
-      .select("title category auther image banner")
-      .lean();
+    const imageUrl = image
+      ? await putImage(
+          image[0].path,
+          path.parse(image[0].filename).name,
+          "manga_images",
+          manga.image_id
+        )
+      : { url: manga.image, fileId: manga.image_id };
+    const bannerUrl = banner
+      ? await putImage(
+          banner[0].path,
+          path.parse(banner[0].fileName).name,
+          "manga_images",
+          manga.banner_id
+        )
+      : { url: manga.banner, fileId: manga.banner_id };
 
     const preAuth = manga.auther;
     const preCat = manga.category;
@@ -212,8 +239,10 @@ export const putManga = async (req, res, next) => {
         date: date.getFullYear(),
         category: category,
         auther: autherUpdated,
-        image: imageUrl,
-        banner: bannerUrl,
+        image: imageUrl.url,
+        banner: bannerUrl.url,
+        image_id: imageUrl.fileId,
+        banner_id: bannerUrl.fileId,
       },
       { timestamps: false }
     ).lean();
@@ -286,13 +315,8 @@ export const deleteManga = async (req, res, next) => {
       { $pull: { recent: { manga: mangaId }, favorite: mangaId } }
     ).lean();
 
-    const mangaImage = path.join(manga.image);
-    const mangaBanner = manga.banner ? path.join(manga.banner) : null;
-    const dirChapters =
-      manga.chapters.length != 0
-        ? path.dirname(path.dirname(manga.chapters[0].chapter[0]))
-        : null;
-    await deleteDirAndFiles([mangaImage, mangaBanner, dirChapters]);
+    await deleteImage(manga.image_id);
+    manga.banner_id && (await deleteImage(manga.banner_id));
 
     return res.status(200).json({ message: "deleted succefully" });
   } catch (error) {

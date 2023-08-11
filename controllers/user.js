@@ -4,12 +4,9 @@ import nodemalier from "nodemailer";
 import sendgridTransport from "nodemailer-sendgrid-transport";
 import dotenv from "dotenv";
 import User from "../models/user.js";
-
 import { errorCode, errorHandler } from "../error/errorsHandler.js";
-import { deleteDirAndFiles } from "../util/file.js";
 import { isObjectId } from "../util/is_objectId.js";
-import webpConvertion from "../util/webpConvertion.js";
-import uploadedImageUrl from "../util/uploadImage.js";
+import { uploadImage, deleteImage, putImage } from "../util/uploadImage.js";
 dotenv.config();
 
 export const signup = async (req, res, next) => {
@@ -19,8 +16,8 @@ export const signup = async (req, res, next) => {
     const password = req.body.password;
     const confirmPw = req.body.confirm;
     const photoUrl = req.file
-      ? await uploadedImageUrl(req.file.path)
-      : "public/profile_photo/default/placeholder-avatar.png";
+      ? await uploadImage(req.file.path, req.file.filename, "profile_photo")
+      : null;
 
     if (password != confirmPw) {
       const message = "confirm passwrod is wrong";
@@ -30,7 +27,8 @@ export const signup = async (req, res, next) => {
     const user = await User.create({
       email: email,
       username: username,
-      photo: photoUrl,
+      photo: photoUrl.url,
+      photo_id: photoUrl.fileId,
       password: hashedPw,
     });
     res.status(201).json({
@@ -464,22 +462,24 @@ export const getUser = async (req, res, next) => {
 export const editeUser = async (req, res, next) => {
   try {
     const userId = req.user.userId;
+    const user = await User.findById(userId).select("photo_id -_id").lean();
+
     const username = req.body.username;
     const email = req.body.email;
     const photo = req.file
-      ? await webpConvertion("profile_photo", req.file.path)
+      ? await putImage(
+          req.file.path,
+          req.file.filename,
+          "profile_photo",
+          user.photo_id
+        )
       : undefined;
-    const user = await User.findById(userId).select("photo -_id").lean();
-
-    if (req.file) {
-      const prePhoto = user.photo;
-      await deleteDirAndFiles(prePhoto);
-    }
 
     await User.findByIdAndUpdate(userId, {
       username: username,
       email: email,
-      photo: photo,
+      photo: photo.url,
+      photo_id: photo.fileId,
     });
 
     res.status(200).json("success");
@@ -541,15 +541,14 @@ export const deleteUser = async (req, res, next) => {
     const userId = req.body.userId;
 
     const user = await User.findOneAndDelete({ _id: userId })
-      .select("photo -_id")
+      .select("photo photo_id -_id")
       .lean();
+
     if (!user) {
       errorCode("User not found", 404);
     }
-    const photoPath = user.photo;
-    if (photoPath != "public/profile_photo/default/placeholder-avatar.png") {
-      await deleteDirAndFiles(photoPath);
-    }
+
+    await deleteImage(user.photo_id);
     res.status(200).json("success");
   } catch (error) {
     next(errorHandler(error));
