@@ -19,6 +19,10 @@ const userSchema = new Schema(
       type: String,
       default: null,
     },
+    photo_id: {
+      type: String,
+      default: null,
+    },
     recent: [
       {
         manga: {

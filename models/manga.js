@@ -23,7 +23,15 @@ const mangaSchema = new Schema(
       type: String,
       required: true,
     },
+    image_id: {
+      type: String,
+      required: true,
+    },
     banner: {
+      type: String,
+      default: null,
+    },
+    banner_id: {
       type: String,
       default: null,
     },

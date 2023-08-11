@@ -15,6 +15,10 @@ const newsSchema = new Schema(
       type: String,
       required: true,
     },
+    poster_id: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
