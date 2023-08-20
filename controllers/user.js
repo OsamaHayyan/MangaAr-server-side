@@ -17,7 +17,7 @@ export const signup = async (req, res, next) => {
     const confirmPw = req.body.confirm;
     const photoUrl = req.file
       ? await uploadImage(req.file.path, req.file.filename, "profile_photo")
-      : null;
+      : { url: null };
 
     if (password != confirmPw) {
       const message = "confirm passwrod is wrong";
