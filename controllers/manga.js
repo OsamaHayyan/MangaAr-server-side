@@ -470,7 +470,7 @@ export const getTrendy = async (req, res, next) => {
     ];
     for (let i = 0; i < categories.length; i++) {
       const mangaData = await Manga.find({ category: categories[i]._id })
-        .limit(5)
+        .limit(6)
         .select("views title image rate chapters");
 
       trendy.push({ category: categories[i].cateogry, manga: mangaData });
