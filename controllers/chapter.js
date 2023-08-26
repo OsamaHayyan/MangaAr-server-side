@@ -1,12 +1,24 @@
 import sharp from "sharp";
 import path from "path";
 import slices from "slices";
+import dotenv from "dotenv";
+
 import Manga from "../models/manga.js";
 import User from "../models/user.js";
 import last_releases from "../models/last_releases.js";
 import { deleteDirAndFiles } from "../util/file.js";
 import { isObjectId } from "../util/is_objectId.js";
 import { errorCode, errorHandler } from "../error/errorsHandler.js";
+import ImageKit from "imagekit";
+import { deleteFolder } from "../util/uploadImage.js";
+
+dotenv.config();
+
+const imagekit = new ImageKit({
+  publicKey: "public_vIfkSNqPfFacM12TOb8bVoGp0Ss=",
+  privateKey: process.env.ImageKit_PrivateKey,
+  urlEndpoint: "https://ik.imagekit.io/ziosx2001",
+});
 
 export const createChapter = async (req, res, next) => {
   try {
@@ -24,10 +36,10 @@ export const createChapter = async (req, res, next) => {
       const message = "Please add Chapter pages";
       return errorCode(message, 400);
     }
-
+    let updatedDate = new Date().toISOString();
     let page = 1;
     let images = [];
-    for await (const c of chapter) {
+    for (const c of chapter) {
       try {
         let count = 1;
         let image = sharp(c);
@@ -48,9 +60,9 @@ export const createChapter = async (req, res, next) => {
           [Width1, Width2]
         );
 
-        blocks.forEach((b) => {
+        for (const b of blocks) {
           const date = new Date().toISOString().replace(/:/g, "-");
-          sharp(c)
+          const imageBuf = await sharp(c)
             .extract({
               left: parseInt(b.x),
               top: parseInt(b.y),
@@ -58,27 +70,19 @@ export const createChapter = async (req, res, next) => {
               height: parseInt(b.height),
             })
             .webp({ quality: 80 })
-            .toFile(
-              path.join(
-                "public",
-                "chapters",
-                mangaId,
-                chapterNum,
-                `page_${page}-${count}-${date}.webp`
-              )
-            );
-          images.push(
-            path.join(
-              "public",
-              "chapters",
-              mangaId,
-              chapterNum,
-              `page_${page}-${count}-${date}.webp`
-            )
-          );
-          count++;
-        });
+            .toBuffer();
+          const imageBase64 = imageBuf.toString("base64");
+          const imageUrl = await imagekit.upload({
+            file: imageBase64,
+            fileName: `page_${page}-${count}-${date}.webp`,
+            folder: `chapters/${mangaId}/${chapterNum}`,
+            responseFields: "url",
+            useUniqueFileName: false,
+          });
 
+          images.push(imageUrl.url);
+          count++;
+        }
         page++;
       } catch (error) {
         next(errorHandler(error));
@@ -109,7 +113,7 @@ export const createChapter = async (req, res, next) => {
     });
 
     setTimeout(async () => {
-      await deleteDirAndFiles(chapter);
+      await deleteDirAndFiles(path.dirname(chapter[0]));
     }, 500);
 
     res.status(200).json("succes");
@@ -230,8 +234,8 @@ export const deleteChapter = async (req, res, next) => {
       .deleteOne({ manga: mangaId, chapter: chapterId })
       .lean();
 
-    const dirname = path.dirname(manga.chapters[0].chapter[0]);
-    await deleteDirAndFiles(dirname);
+    const dirname = `chapters/${mangaId}/${manga.chapters[0].chapterNum}`;
+    await deleteFolder(dirname);
     return res.status(200).json("deleted");
   } catch (error) {
     next(errorHandler(error));

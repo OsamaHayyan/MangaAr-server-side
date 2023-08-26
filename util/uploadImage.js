@@ -71,3 +71,13 @@ export const deleteImage = async (imageId) => {
     errorCode("Internal Server", 500);
   }
 };
+
+export const deleteFolder = async (dir) => {
+  try {
+    if (!dir) throw new Error("please provid the image id");
+    await imagekit.deleteFolder(dir);
+  } catch (error) {
+    console.log(error);
+    errorCode("Internal Server", 500);
+  }
+};

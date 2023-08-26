@@ -51,9 +51,9 @@ export const createManga = async (req, res, next) => {
       date: date.getFullYear(),
       auther: auther,
       image: imageUrl.url,
-      banner: bannerUrl.url ? bannerUrl.url : null,
+      banner: bannerUrl ? bannerUrl.url : null,
       image_id: imageUrl.fileId,
-      banner_id: bannerUrl.fileId ? bannerUrl.fileId : null,
+      banner_id: bannerUrl ? bannerUrl.fileId : null,
     });
 
     if (auther != null) {
