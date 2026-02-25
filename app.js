@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import path, { dirname } from "path";
+import path from "path";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -19,26 +19,26 @@ import __dirname from "./util/__dirname.js";
 dotenv.config();
 
 const corsOptions = {
-  origin: process.env.ORIGIN,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  credentials: true,
+    origin: process.env.ORIGIN,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
 };
 
 const app = express();
 
-app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(helmet({crossOriginResourcePolicy: false}));
 app.use(compression());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 app.use(cors(corsOptions));
 
 app.use(
-  "/public",
-  express.static(path.join(__dirname(import.meta.url), "public"))
+    "/public",
+    express.static(path.join(__dirname(import.meta.url), "public"))
 );
 
 app.use("/last-release", last_releases);
@@ -50,49 +50,46 @@ app.use("/chapters", Chapters);
 app.use("/category", Category);
 
 app.use(async (error, req, res, next) => {
-  try {
-    const status = error.statusCode || 500;
-    let message = error.message;
-    let data = error.data?.map((d) => ({ msg: d.msg, param: d.param }));
-    if (!data) {
-      data = [{ msg: "internal server error" }];
+    try {
+        const status = error.statusCode || 500;
+        let message = error.message;
+        let data = error.data?.map((d) => ({msg: d.msg, param: d.param}));
+        if (!data) {
+            data = [{msg: "internal server error"}];
+        }
+        if (status === 500) {
+            message = "Faild to fetch";
+        }
+        console.log(error);
+        res
+            .status(status)
+            .json({message: message, data: data, statusCode: status});
+    } catch (error) {
+        console.log(error);
+        const message = "Faild to fetch";
+        res.status(500).json({message: message});
     }
-    if (status === 500) {
-      message = "Faild to fetch";
-    }
-    console.log(error);
-    res
-      .status(status)
-      .json({ message: message, data: data, statusCode: status });
-  } catch (error) {
-    console.log(error);
-    const message = "Faild to fetch";
-    res.status(500).json({ message: message });
-  }
 });
 
 const port = Number.parseInt(process.env.PORT) || 8080;
 const mongo = process.env.DATABASE_URL;
 
 (async () => {
-  let maxTries = 2;
-  try {
-    maxTries -= 1;
-    await mongoose.connect(mongo, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    return app.listen(port);
-  } catch (error) {
-    if (maxTries > 0) {
-      maxTries -= 1;
-      await mongoose.connect(mongo, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-      return app.listen(port);
-    } else {
-      throw error;
+    let maxTries = 2;
+    try {
+        maxTries -= 1;
+        await mongoose.connect(mongo);
+        return app.listen(port);
+    } catch (error) {
+        if (maxTries > 0) {
+            maxTries -= 1;
+            await mongoose.connect(mongo, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            });
+            return app.listen(port);
+        } else {
+            throw error;
+        }
     }
-  }
 })();

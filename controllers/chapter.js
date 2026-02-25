@@ -1,6 +1,5 @@
 import sharp from "sharp";
 import path from "path";
-import slices from "slices";
 import dotenv from "dotenv";
 
 import Manga from "../models/manga.js";
@@ -13,6 +12,29 @@ import ImageKit from "imagekit";
 import { deleteFolder } from "../util/uploadImage.js";
 
 dotenv.config();
+
+const createGridBlocks = (width, height, rows = 3, cols = 3) => {
+  const xSteps = Array.from({ length: cols + 1 }, (_, i) =>
+    Math.round((width * i) / cols)
+  );
+  const ySteps = Array.from({ length: rows + 1 }, (_, i) =>
+    Math.round((height * i) / rows)
+  );
+
+  const blocks = [];
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      blocks.push({
+        x: xSteps[x],
+        y: ySteps[y],
+        width: xSteps[x + 1] - xSteps[x],
+        height: ySteps[y + 1] - ySteps[y],
+      });
+    }
+  }
+
+  return blocks.filter((block) => block.width > 0 && block.height > 0);
+};
 
 const imagekit = new ImageKit({
   publicKey: "public_vIfkSNqPfFacM12TOb8bVoGp0Ss=",
@@ -48,17 +70,7 @@ export const createChapter = async (req, res, next) => {
           return { height: d.height, width: d.width, type: d.format };
         });
 
-        const Height1 = height / 3;
-        const Height2 = Height1 * 2;
-        const Width1 = width / 3;
-        const Width2 = Width1 * 2;
-
-        const blocks = slices(
-          width,
-          height,
-          [Height1, Height2],
-          [Width1, Width2]
-        );
+        const blocks = createGridBlocks(width, height, 3, 3);
 
         for (const b of blocks) {
           const date = new Date().toISOString().replace(/:/g, "-");
